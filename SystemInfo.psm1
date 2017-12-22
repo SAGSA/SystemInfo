@@ -1116,11 +1116,9 @@ if ($Count -eq $WmiParamArray.count)
 
 function WrErr($Err,$Job)
 {
-try
-{
 if ($Job -eq $null)
     {
-       Write-Error "$Computername Job variable null" -ErrorAction Stop
+    Write-Error "$Computername Job variable null"
     }
     if($tmperr=$Global:ErrorResult | Where-Object {$_.computername -eq $Job.location})
         {
@@ -1148,11 +1146,6 @@ if ($Job.PSJobTypeName -eq "RunspaceJob")
 
 $RemoveJobs=$jobs | Where-Object {$_.location -eq $Job.location}
 $RemoveJobs  | foreach {$Jobs.Remove($_)}
-}
-catch
-    {
-    $Jobs.Remove($Job)
-    }
 }
 
 function GetJob
