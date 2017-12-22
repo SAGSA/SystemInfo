@@ -12,7 +12,7 @@ $ErrorResult-contains computers that have errors.
 
 .PARAMETER MaxJob
 Specifies the maximum number of WMI and Runspace operations that can be executed simultaneously.
-By default, the value of this parameter is 250.
+By default, the value of this parameter is 254.
 
 .PARAMETER JobTimeout
 Specifies the amount of time that the function waits for a response from the wmi job or runspace job.
@@ -124,7 +124,7 @@ function Get-SystemInfo
             $Credential,
             [Alias("ThrottleLimit")]
             [ValidateRange(1,1000)]
-            [int]$MaxJob=250,
+            [int]$MaxJob=254,
             [Alias("Timeout")]
             [ValidateRange(1,6000)]
             [int]$JobTimeOut=120,
