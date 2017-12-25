@@ -175,6 +175,7 @@ Information | Property | Description |
 | | OsUpTime |Get OS Uptime |
 | | OsLoggedInUser | User logged in |
 | | OsProductKey | Get OS ProductKey |
+| | OsAdministrators | Get Os Administrators |
 | Memory | MemoryTotal |Get Memory Total |
 | | MemoryFree |Get Memory Free |
 | | MemoryModules |Get Memory Modules |
