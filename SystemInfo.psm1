@@ -133,7 +133,7 @@ function Get-SystemInfo
             [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsLoggedInUser","OsProductKey","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HddDevCount",
             "HddPredictFailure","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","CPULoad","SoftwareList","RegistryValue","OsProcess")] 
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","CPULoad","SoftwareList","RegistryValue","OsProcess","OsAdministrators")] 
             [array]$Properties
             
             )
@@ -192,6 +192,7 @@ RegistryValue=    '-Class StdRegProv -ScriptBlock $SbGetRegistryValue -UseRunspa
 SoftwareList=     '-Class StdRegProv -ScriptBlock $SbSoftwareList -UseRunspace'
 OsProductKey=     '-Class StdRegProv -ScriptBlock $SBOsProductKey -UseRunspace'
 OsLoggedInUser=   '-Class Win32_ComputerSystem -Property UserName'
+OsAdministrators= '-Class Win32_OperatingSystem -Scriptblock $SbOsAdministrators -UseRunspace'
 }
 
 $ManualNamespace=@{
@@ -204,7 +205,7 @@ StdRegProv='-Namespace ROOT\default -Query SELECT * FROM meta_class WHERE __clas
 #################################################################################################################################
 #Config Switch Param
 $SwitchConfig=@{
-OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsProductKey","OsLoggedInUser"
+OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsProductKey","OsLoggedInUser",'OsAdministrators'
 Cpu="CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad"
 Hdd="HddDevices","HddDevCount"
 Motherboard="Motherboard","MotherboardModel","DeviceModel"
@@ -226,6 +227,61 @@ $ExcludeParam="Verbose","AppendToResult","Debug","ShowStatistics"
 
 #ScriptBlock
 #################################################################################################################################
+[scriptblock]$SbOsAdministrators=
+{
+try
+{
+$LangAdminGroups=@{
+#Key https://msdn.microsoft.com/ru-ru/library/ms912047(v=winembedded.10).aspx Value Administrators Group
+"1049"="Администраторы"
+"1033"="Administrators"
+}
+$ComputerName=$Win32_OperatingSystem.__SERVER
+$GroupName=$LangAdminGroups["$($Win32_OperatingSystem.OSLanguage)"]
+if ($GroupName -eq $Null)
+    {
+    $GroupName="Administrators"
+    }
+$wmitmp = Get-WmiObject -ComputerName $ComputerName -Query "SELECT * FROM Win32_GroupUser WHERE GroupComponent=`"Win32_Group.Domain='$ComputerName',Name='$GroupName'`"" -ErrorAction Stop
+if ($wmitmp -ne $null)  
+        {  
+         $wmitmp |   foreach{   
+             
+                if ($_.PartComponent -match '(.+:)?(.+)\..+?="(.+?)",Name="(.+?)"')
+                    {
+                    $Type=$Matches[2]
+                    $Domain=$matches[3]
+                    $Name=$Matches[4]
+                    if ($domain -eq $computername)
+                        {
+                        $IsLocalAccount=$True
+                        }
+                        else
+                            {
+                            $IsLocalAccount=$false
+                            }
+                    
+                    $DispObj=New-Object psobject 
+                    $DispObj | Add-Member -MemberType NoteProperty -Name FullName -Value "$Domain\$Name"
+                    $DispObj | Add-Member -MemberType NoteProperty -Name Domain -Value $Domain
+                    $DispObj | Add-Member -MemberType NoteProperty -Name Name -Value $Name
+                    $DispObj | Add-Member -MemberType NoteProperty -Name Type -Value $Type
+                    $DispObj | Add-Member -MemberType NoteProperty -Name IsLocal -Value $IsLocalAccount
+                    $DispObj
+                    }
+                
+            }  
+        } 
+        else
+            {
+            Write-Error -Message "Query SELECT * FROM Win32_GroupUser WHERE GroupComponent=`"Win32_Group.Domain='$ComputerName',Name='$GroupName'`" return null value. Check LangAdminGroups hashtable" -ErrorAction Stop
+            } 
+}
+catch
+    {
+    $_
+    }
+}
 [scriptblock]$SBOsInstalldate=
 {
 [Management.ManagementDateTimeConverter]::ToDateTime($Win32_OperatingSystem.installdate)
@@ -851,8 +907,7 @@ catch
     }
 }
 #################################################################################################################################
-#EndScriptBlock
- 
+#EndScriptBlock 
 #Block Function
 #Registry function
 
