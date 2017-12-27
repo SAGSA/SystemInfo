@@ -1,100 +1,103 @@
 ﻿<#
 .SYNOPSIS
-Very fast displays system information on a local or remote computer.
+    Very fast displays system information on a local or remote computer.
 
 .DESCRIPTION
-The function uses WMI to collect information related to the characteristics of the computer
-The function uses multithreading. Multithreading is implemented through powershell runspace and WMI Job
-The function allows you to quickly get the system information of a large number of computers on the network
-After executing, two variables are created: 
-$Result-contains successful queries, 
-$ErrorResult-contains computers that have errors.
+    The function uses WMI to collect information related to the characteristics of the computer
+    The function uses multithreading. Multithreading is implemented through powershell runspace and WMI Job
+    The function allows you to quickly get the system information of a large number of computers on the network
+    After executing, two variables are created: 
+    $Result-contains successful queries, 
+    $ErrorResult-contains computers that have errors.
 
 .PARAMETER MaxJob
-Specifies the maximum number of WMI and Runspace operations that can be executed simultaneously.
-By default, the value of this parameter is 254.
+    Specifies the maximum number of WMI and Runspace operations that can be executed simultaneously.
+    By default, the value of this parameter is 254.
 
 .PARAMETER JobTimeout
-Specifies the amount of time that the function waits for a response from the wmi job or runspace job.
-By default, the value of this parameter is 120 seconds.
+    Specifies the amount of time that the function waits for a response from the wmi job or runspace job.
+    By default, the value of this parameter is 120 seconds.
 
 .PARAMETER AppendToResult
-Adds the output to the $Result global variable. Without this parameter, $Result global variable replaces.
+    Adds the output to the $Result global variable. Without this parameter, $Result global variable replaces.
 
 .PARAMETER Credential
-Specifies a user account that has permission to perform this action. The default is the current user. Type a user n
-ame, such as "User01", "Domain01\User01", or User@domain01.com. Or, enter a PSCredential object, such as an object t
-hat is returned by the Get-Credential cmdlet. When you type a user name, you are prompted for a password.
+    Specifies a user account that has permission to perform this action. The default is the current user. Type a user n
+    ame, such as "User01", "Domain01\User01", or User@domain01.com. Or, enter a PSCredential object, such as an object t
+    hat is returned by the Get-Credential cmdlet. When you type a user name, you are prompted for a password.
 
 .PARAMETER ShowStatistics
-Show statistics information
+    Show statistics information
 
 .EXAMPLE
-Get-SystemInfo
+    Get-SystemInfo
 
-ComputerName     : Localhost
-OsCaption        : Майкрософт Windows 10 Pro
-OsArchitecture   : 64-разрядная
-OsUpTime         : 10:1:17:41
-OsLoggedInUser   : Domain\Username
-CPUName          : Intel(R) Core(TM) i3-2105 CPU @ 3.10GHz
-MotherboardModel : H61M-S1
-DeviceModel      : To be filled by O.E.M.
-MemoryTotal      : 4,0Gb
-MemoryModules    :
-                   Capacity MemoryType Speed Manufacturer PartNumber
-                   -------- ---------- ----- ------------ ----------
-                   2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
-                   2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
-
-
-
-HddDevices       :
-                   Size  InterfaceType Model                           PredictFailure
-                   ----  ------------- -----                           --------------
-                   112Gb IDE           KINGSTON SHFS37A120G ATA Device False
-                   149Gb IDE           ST3160813AS ATA Device          False
+    ComputerName     : Localhost
+    OsCaption        : Майкрософт Windows 10 Pro
+    OsArchitecture   : 64-разрядная
+    OsUpTime         : 10:1:17:41
+    OsLoggedInUser   : Domain\Username
+    CPUName          : Intel(R) Core(TM) i3-2105 CPU @ 3.10GHz
+    MotherboardModel : H61M-S1
+    DeviceModel      : To be filled by O.E.M.
+    MemoryTotal      : 4,0Gb
+    MemoryModules    :
+                       Capacity MemoryType Speed Manufacturer PartNumber
+                       -------- ---------- ----- ------------ ----------
+                       2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
+                       2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
 
 
 
-VideoModel       : Intel(R) HD Graphics 3000
-MonitorName      : E2042
-CdRom            : TSSTcorp CDDVDW SH-222BB
+    HddDevices       :
+                       Size  InterfaceType Model                           PredictFailure
+                       ----  ------------- -----                           --------------
+                       112Gb IDE           KINGSTON SHFS37A120G ATA Device False
+                       149Gb IDE           ST3160813AS ATA Device          False
 
-This command get the system information on the local computer.
 
-.EXAMPLE
-Get-SystemInfo -Computername comp1,comp2,comp3
-This command receives system information from computers comp1, comp2, comp3. By default, the current account must be a member of the Administrators group on the
-remote computer.
+
+    VideoModel       : Intel(R) HD Graphics 3000
+    MonitorName      : E2042
+    CdRom            : TSSTcorp CDDVDW SH-222BB
+
+    This command get the system information on the local computer.
 
 .EXAMPLE
-1..254 | foreach {"192.168.1.$_"} | Get-SystemInfo -Properties OsCaption,OSArchitecture,OsInstallDate -Credential Domain01\administrator01 | Out-GridView
-Get OsCaption, OSArchitecture, OsInstallDate from the computers that are in the 192.168.1.0/24 network and sends them to a grid view window. This command uses 
-the Credential parameter. The value of the Credential parameter is a user account name. The user is prompted for a password.
+    Get-SystemInfo -Computername comp1,comp2,comp3
+    This command receives system information from computers comp1, comp2, comp3. By default, the current account must be a member of the Administrators group on the
+    remote computer.
 
 .EXAMPLE
-Get-ADComputer -Filter * | Get-SystemInfo -Cpu -Motherboard -Memory -Properties OsVersion,OsProductKey -MaxJob 100 -JobTimeOut 30
-Get CPU, Motherboard, Memory and OsVersion, OsProductKey information from all domain computers. The module activedirectory must be installed and loaded. 
-This command uses MaxJob and JobTimeOut parameter.
+    1..254 | foreach {"192.168.1.$_"} | Get-SystemInfo -Properties OsCaption,OSArchitecture,OsInstallDate -Credential Domain01\administrator01 | Out-GridView
+    Get OsCaption, OSArchitecture, OsInstallDate from the computers that are in the 192.168.1.0/24 network and sends them to a grid view window. This command uses 
+    the Credential parameter. The value of the Credential parameter is a user account name. The user is prompted for a password.
+
+.EXAMPLE
+    Get-ADComputer -Filter * | Get-SystemInfo -Cpu -Motherboard -Memory -Properties OsVersion,OsProductKey -MaxJob 100 -JobTimeOut 30
+    Get CPU, Motherboard, Memory and OsVersion, OsProductKey information from all domain computers. The module activedirectory must be installed and loaded. 
+    This command uses MaxJob and JobTimeOut parameter.
 
 .EXAMPLE 
-Get-SystemInfo -RegistryKey "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -RegistryValue SMB1 -RegistryValueType GetDWORDValue
-This command gets the SMB1 registry value
-If errors occur, such as timeout expired  or other errors.
-After some time, you can repeat the command for computers that have had errors.To do this, you need to use the variable $ErrorResult and -AppendToResult parameter to add the result to a variable $Result. 
+    Get-SystemInfo -RegistryKey "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -RegistryValue SMB1 -RegistryValueType GetDWORDValue
+    This command gets the SMB1 registry value
+    If errors occur, such as timeout expired  or other errors.
+    After some time, you can repeat the command for computers that have had errors.To do this, you need to use the variable $ErrorResult and -AppendToResult parameter to add the result to a variable $Result. 
 
-PS C:\>$ErrorResult | Get-SystemInfo -RegistryKey "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -RegistryValue SMB1 -RegistryValueType GetDWORDValue -AppendToResult
-
-.EXAMPLE
-
-Get-Content -Path C:\Computers.txt | Get-SystemInfo -Properties MemoryTotal,OsLoggedInUser -WarningAction SilentlyContinue | Where-Object {$_.memorytotal -lt 1.5gb}
-This command gets computers that have a RAM size less than 1.5 gb. List of computers is taken from the file C:\Computers.txt. This command use parameter -WarningAction SilentlyContinue to ignore warning.
+    PS C:\>$ErrorResult | Get-SystemInfo -RegistryKey "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -RegistryValue SMB1 -RegistryValueType GetDWORDValue -AppendToResult
 
 .EXAMPLE
-$Computers=Get-Content -Path C:\Computers.txt
-Get-SystemInfo -Computername $Computers | ConvertTo-Html -Head "SystemInformation" | Out-File -FilePath C:\report.html
-This command create html report
+    Get-Content -Path C:\Computers.txt | Get-SystemInfo -Properties MemoryTotal,OsLoggedInUser -WarningAction SilentlyContinue | Where-Object {$_.memorytotal -lt 1.5gb}
+    This command gets computers that have a RAM size less than 1.5 gb. List of computers is taken from the file C:\Computers.txt. This command use parameter -WarningAction SilentlyContinue to ignore warning.
+
+.EXAMPLE
+    $Computers=Get-Content -Path C:\Computers.txt
+    Get-SystemInfo -Computername $Computers | ConvertTo-Html -Head "SystemInformation" | Out-File -FilePath C:\report.html
+    This command create html report
+.NOTES
+    Author: SAGSA
+    https://github.com/SAGSA/SystemInfo
+    Requires: Powershell 2.0
 
 #>
 
@@ -228,8 +231,8 @@ $ExcludeParam="Verbose","AppendToResult","Debug","ShowStatistics"
 
 #ScriptBlock
 #################################################################################################################################
-[scriptblock]$SbOsActivationStatus=
-{
+[scriptblock]$SbOsActivationStatus={
+
 $ActStat=@{
 "1"  = "Licensed"
 "2"  = "Out-Of-Box Grace Period"
@@ -240,55 +243,52 @@ $ActStat=@{
 }
 
 if ($Query_SoftwareLicensingProduct_OsActivationStatus)
-    {
-    $LicStat=($Query_SoftwareLicensingProduct_OsActivationStatus.Licensestatus).tostring()
-    $Stat=$ActStat[$LicStat]
+{
+$LicStat=($Query_SoftwareLicensingProduct_OsActivationStatus.Licensestatus).tostring()
+$Stat=$ActStat[$LicStat]
     if (!$Stat)
-        {
+    {
         $Stat="Unknown value $($Query_SoftwareLicensingProduct_OsActivationStatus.Licensestatus)"
-        }
-
+    }
     if ($Query_SoftwareLicensingProduct_OsActivationStatus.Description -match ".+,\s?(.+)")
-        {
+    {
         $Descr=$Matches[1]
-        }
-        else
-            {
-            $Query_SoftwareLicensingProduct_OsActivationStatus.Description
-            }
-    
-    $KmsPort=$Query_SoftwareLicensingProduct_OsActivationStatus.KeyManagementServicePort
-    $KmsServer=$Query_SoftwareLicensingProduct_OsActivationStatus.KeyManagementServiceMachine
-    if ($KmsServer -and $KmsPort)
-        {
-        $FullKms=$KmsServer+":"+$KmsPort
-        }
-        else
-            {
-            $FullKms=$null
-            }
-    
     }
     else
-        {
-        $Stat="Unlicensed or Unknown"
-        }
+    {
+        $Query_SoftwareLicensingProduct_OsActivationStatus.Description
+    }
+    
+$KmsPort=$Query_SoftwareLicensingProduct_OsActivationStatus.KeyManagementServicePort
+$KmsServer=$Query_SoftwareLicensingProduct_OsActivationStatus.KeyManagementServiceMachine
+    if ($KmsServer -and $KmsPort)
+    {
+        $FullKms=$KmsServer+":"+$KmsPort
+    }
+    else
+    {
+        $FullKms=$null
+    }
+    
+}
+else
+{
+    $Stat="Unlicensed or Unknown"
+}
 $Prop=@{
     "Status"=$Stat
     "Description"=$Descr
-    }
+}
 if ($FullKms)
-    {
+{
     $Prop.Add("KMSServer",$FullKms)
-    }
-
+}
 $DispObj=New-Object psobject -Property $Prop
 $DispObj
 }
-[scriptblock]$SbOsAdministrators=
-{
-try
-{
+
+[scriptblock]$SbOsAdministrators={
+try{
 $LangAdminGroups=@{
 #Key https://msdn.microsoft.com/ru-ru/library/ms912047(v=winembedded.10).aspx Value Administrators Group
 "1049"="Администраторы"
@@ -297,51 +297,49 @@ $LangAdminGroups=@{
 $ComputerName=$Win32_OperatingSystem.__SERVER
 $GroupName=$LangAdminGroups["$($Win32_OperatingSystem.OSLanguage)"]
 if ($GroupName -eq $Null)
-    {
+{
     $GroupName="Administrators"
-    }
+}
 $wmitmp = Get-WmiObject -ComputerName $ComputerName -Query "SELECT * FROM Win32_GroupUser WHERE GroupComponent=`"Win32_Group.Domain='$ComputerName',Name='$GroupName'`"" -ErrorAction Stop
 if ($wmitmp -ne $null)  
-        {  
-         $DispObjArray=@()
-         $wmitmp |   foreach{   
-             
-                if ($_.PartComponent -match '(.+:)?(.+)\..+?="(.+?)",Name="(.+?)"')
-                    {
-                    $Type=$Matches[2]
-                    $Domain=$matches[3]
-                    $Name=$Matches[4]
-                    if ($domain -eq $computername)
-                        {
-                        $IsLocalAccount=$True
-                        }
-                        else
-                            {
-                            $IsLocalAccount=$false
-                            }
-                    
-                    $DispObj=New-Object psobject 
-                    $DispObj | Add-Member -MemberType NoteProperty -Name FullName -Value "$Domain\$Name"
-                    #$DispObj | Add-Member -MemberType NoteProperty -Name Domain -Value $Domain
-                    #$DispObj | Add-Member -MemberType NoteProperty -Name Name -Value $Name
-                    $DispObj | Add-Member -MemberType NoteProperty -Name Type -Value $Type
-                    $DispObj | Add-Member -MemberType NoteProperty -Name IsLocal -Value $IsLocalAccount
-                    $DispObjArray+=$DispObj 
-                    }
-                
-            }  
-        $DispObjArray | Sort-Object -Property IsLocal,Type
-        } 
-        else
-            {
-            Write-Error -Message "Query SELECT * FROM Win32_GroupUser WHERE GroupComponent=`"Win32_Group.Domain='$ComputerName',Name='$GroupName'`" return null value. Check LangAdminGroups hashtable" -ErrorAction Stop
-            } 
-}
-catch
+{  
+$DispObjArray=@()
+$wmitmp | foreach{   
+    if ($_.PartComponent -match '(.+:)?(.+)\..+?="(.+?)",Name="(.+?)"')
     {
-    $_
+    $Type=$Matches[2]
+    $Domain=$matches[3]
+    $Name=$Matches[4]
+        if ($domain -eq $computername)
+        {
+            $IsLocalAccount=$True
+        }
+        else
+        {
+            $IsLocalAccount=$false
+        }
+                    
+    $DispObj=New-Object psobject 
+    $DispObj | Add-Member -MemberType NoteProperty -Name FullName -Value "$Domain\$Name"
+    #$DispObj | Add-Member -MemberType NoteProperty -Name Domain -Value $Domain
+    #$DispObj | Add-Member -MemberType NoteProperty -Name Name -Value $Name
+    $DispObj | Add-Member -MemberType NoteProperty -Name Type -Value $Type
+    $DispObj | Add-Member -MemberType NoteProperty -Name IsLocal -Value $IsLocalAccount
+    $DispObjArray+=$DispObj 
     }
+                
+}  
+$DispObjArray | Sort-Object -Property IsLocal,Type
+} 
+else
+{
+    Write-Error -Message "Query SELECT * FROM Win32_GroupUser WHERE GroupComponent=`"Win32_Group.Domain='$ComputerName',Name='$GroupName'`" return null value. Check LangAdminGroups hashtable" -ErrorAction Stop
+} 
+}catch{
+    $_
 }
+}
+
 [scriptblock]$SBOsInstalldate=
 {
 [Management.ManagementDateTimeConverter]::ToDateTime($Win32_OperatingSystem.installdate)
@@ -357,7 +355,6 @@ $Uptime=$Win32_OperatingSystem.ConvertToDateTime($Win32_OperatingSystem.LocalDat
 {
 $Win32_PhysicalMemory | Select-Object Capacity | foreach {
 $MemTotalCount+=$_.capacity
-
 }
 $MemTotalCount
 }
@@ -410,16 +407,16 @@ $MemoryTypeArray=@{
 #$MemModules=$Win32_PhysicalMemory | Select-Object Capacity,MemoryType,Speed,Manufacturer,PartNumber
 $MemModules=@()
 $Win32_PhysicalMemory | foreach {
-$Property=@{
-Capacity=$_.capacity
-MemoryType=$MemoryTypeArray[[string]$_.memorytype]
-Speed=$_.speed
-Manufacturer=$_.Manufacturer
-PartNumber=$_.PartNumber
-}
-$MemModule=New-Object Psobject -Property $Property
-$MemModule.psobject.typenames.insert(0,"ModuleSystemInfo.SystemInfo.Memory.Modules")
-$MemModules+=$MemModule
+    $Property=@{
+    Capacity=$_.capacity
+    MemoryType=$MemoryTypeArray[[string]$_.memorytype]
+    Speed=$_.speed
+    Manufacturer=$_.Manufacturer
+    PartNumber=$_.PartNumber
+    }
+    $MemModule=New-Object Psobject -Property $Property
+    $MemModule.psobject.typenames.insert(0,"ModuleSystemInfo.SystemInfo.Memory.Modules")
+    $MemModules+=$MemModule
 }
 
 $MemModules
@@ -429,6 +426,7 @@ $MemModules
 {
 $Win32_PhysicalMemoryArray | foreach {$_.memorydevices}
 }
+
 [scriptblock]$SbECCType=
 {
 $MemoryEccArray=@{'0'='Reserved';
@@ -442,43 +440,45 @@ $MemoryEccArray=@{'0'='Reserved';
 }
 $Win32_PhysicalMemoryArray| foreach{$MemoryEccArray[[string]$_.MemoryErrorCorrection]}
 }
+
 [scriptblock]$SbHddDevices=
 {
 $hdddev=$Win32_DiskDrive | Select-Object Model,Size,MediaType,InterfaceType,FirmwareRevision,SerialNumber,PNPDeviceID;
 $PnpDev=@{}
 $hdddev | foreach {
-$PnpDev.Add($($_.pnpdeviceid -replace "\\","\\"),$_)
+    $PnpDev.Add($($_.pnpdeviceid -replace "\\","\\"),$_)
 }
 
 $PnpDev.Keys | foreach {
-$PnpDevid=$_
-$TmpFailStat=$MSStorageDriver_FailurePredictStatus | Where-Object  {$_.InstanceName -Match $PnpDevid}
-if ($TmpFailStat -ne $null)
+    $PnpDevid=$_
+    $TmpFailStat=$MSStorageDriver_FailurePredictStatus | Where-Object  {$_.InstanceName -Match $PnpDevid}
+    if ($TmpFailStat -ne $null)
     {
-    $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name  PredictFailure -Value $TmpFailStat.PredictFailure 
+        $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name  PredictFailure -Value $TmpFailStat.PredictFailure 
     }
     else
-        {
+    {
         $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name  PredictFailure -Value "---"
-        }
+    }
 
 }
 
 $hdddev=$PnpDev.Values
 $DispInfo=$hdddev | foreach {
-$Property=@{
-Size=$_.Size
-InterfaceType=$_.InterfaceType
-Model=$_.Model
-PredictFailure=$_.PredictFailure
-}
-$TmpObj=New-Object psobject -Property $Property
-$TmpObj.psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.Hdd.Devices")
-$TmpObj
+    $Property=@{
+    Size=$_.Size
+    InterfaceType=$_.InterfaceType
+    Model=$_.Model
+    PredictFailure=$_.PredictFailure
+    }
+    $TmpObj=New-Object psobject -Property $Property
+    $TmpObj.psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.Hdd.Devices")
+    $TmpObj
 }
 
 $DispInfo
 }
+
 [scriptblock]$SbHddDevCount=
 {
 $count=0
@@ -489,33 +489,34 @@ $count
 [scriptblock]$SbVideoModel=
 {
 $Win32_VideoController | foreach {
-if ($_.name -notmatch "Radmin.+" -and $_.name -notmatch "DameWare.+")
+    if ($_.name -notmatch "Radmin.+" -and $_.name -notmatch "DameWare.+")
 	{
-	$_.name
-																
+	    $_.name															
 	} 
 }
+
 }
+
 [scriptblock]$SbVideoRamMb=
 {
 $Win32_VideoController | foreach {
-if ($_.name -notmatch "Radmin.+" -and $_.name -notmatch "DameWare.+")
-	{															
-	$_.AdapterRAM															
-	} 
+    if ($_.name -notmatch "Radmin.+" -and $_.name -notmatch "DameWare.+")
+    {															
+	    $_.AdapterRAM															
+    } 
 }
+
 }
 
 [scriptblock]$SbVideoProcessor=
 {
 $Win32_VideoController | foreach {
-if ($_.name -notmatch "Radmin.+" -and $_.name -notmatch "DameWare.+")
-	{
-																
-	$_.VideoProcessor
-																
+    if ($_.name -notmatch "Radmin.+" -and $_.name -notmatch "DameWare.+")
+	{																
+	    $_.VideoProcessor															
 	} 
 }
+
 }
 
 [scriptblock]$SBMonitorManuf=
@@ -589,50 +590,52 @@ $ManufacturerHashTable = @{
     "HSD"="Hanns.G"
 }
 if ($wmiMonitorID.ManufacturerName -ne $null)
-	{
-			$manuf = $null
-
-     $manuf= ([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.ManufacturerName)).Replace("$([char]0x0000)","")
-			 			
-if ($ManufacturerHashTable["$manuf"])
+{
+$manuf = $null
+$manuf= ([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.ManufacturerName)).Replace("$([char]0x0000)","")			 			
+    if ($ManufacturerHashTable["$manuf"])
     {
-    $ManufacturerHashTable["$manuf"]
+        $ManufacturerHashTable["$manuf"]
     }
     else
-        {
+    {
         $manuf
-        }	
+    }	
 }
+
 }
 
 [scriptblock]$SBMonPCode=
 {
 if ($wmiMonitorID.ProductCodeID -ne $null)
-	{		
+{		
 	$dispproduct = $null
     $dispproduct=([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.ProductCodeID)).Replace("$([char]0x0000)","")			
 	$dispproduct		
-	}
+}
+
 }
 
 [scriptblock]$SbMonSn=
 {
 if ($wmiMonitorID.SerialNumberID -ne $null)
-	{		
-	$dispserial = $null
+{		
+    $dispserial = $null
     $dispserial=([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.SerialNumberID)).Replace("$([char]0x0000)","")			
-	$dispserial		
-	}
+    $dispserial		
+}
+
 }
 
 [scriptblock]$SbMonName=
 {
 if ($wmiMonitorID.UserFriendlyName -ne $null)
-	{
+{
 	$dispname  = $null
 	$dispname=([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.UserFriendlyName)).Replace("$([char]0x0000)","")		
     $dispname
-    }
+}
+
 }
 
 [scriptblock]$SbNetworkAdapters=
@@ -652,26 +655,27 @@ $count
 {    
 #$dispPrinter=$Win32_Printer | Select-Object -Property Name,DriverName,Network,Local,PortName,WorkOffline,Published,Shared,ShareName,Direct,PrinterStatus,PrintProcessor                                                          
 $dispPrinter=$Win32_Printer | foreach {
-$Property=@{
-Name=$_.Name
-DriverName=$_.DriverName
-Local=$_.Local
-ShareName=$_.ShareName
-}
-$TmpObj=New-Object psobject -Property $Property
-$TmpObj.psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.Printers.Printer")
-$TmpObj
+    $Property=@{
+    Name=$_.Name
+    DriverName=$_.DriverName
+    Local=$_.Local
+    ShareName=$_.ShareName
+    }
+    $TmpObj=New-Object psobject -Property $Property
+    $TmpObj.psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.Printers.Printer")
+    $TmpObj
 }
 $dispPrinter
+
 }
 [scriptblock]$SbUsbConPrCount=
 {                                                     
 $count=0
 $dispPrinter=$Win32_Printer | Select-Object -Property Name,DriverName,Network,Local,PortName,WorkOffline,Published,Shared,ShareName,Direct,PrinterStatus,PrintProcessor
 $dispPrinter | foreach {
-if (($_.portname -match "Usb") -and ($_.local -eq $True) -and ($_.workOffline -eq $false))
+    if (($_.portname -match "Usb") -and ($_.local -eq $True) -and ($_.workOffline -eq $false))
     {
-    $Count++                                                   
+        $Count++                                                   
     }
                                                                                                                 
 }
@@ -684,11 +688,12 @@ if (($_.portname -match "Usb") -and ($_.local -eq $True) -and ($_.workOffline -e
                                                      
 $IsPrintServer=$false
 $dispPrinter=$Win32_Printer | Select-Object -Property Name,DriverName,Network,Local,PortName,WorkOffline,Published,Shared,ShareName,Direct,PrinterStatus,PrintProcessor
-$dispPrinter | foreach {if (($_.portname -match "Usb") -and ($_.local -eq $True) -and ($_.workOffline -eq $false))
+$dispPrinter | foreach {
+    if (($_.portname -match "Usb") -and ($_.local -eq $True) -and ($_.workOffline -eq $false))
     {                                                     
-    if ($_.shared -eq $true)
+        if ($_.shared -eq $true)
         {
-        $IsPrintServer=$True
+            $IsPrintServer=$True
         }
                                                             
     }
@@ -696,33 +701,34 @@ $dispPrinter | foreach {if (($_.portname -match "Usb") -and ($_.local -eq $True)
 }
 
 $IsPrintServer                                                    
+
 }
 
 [scriptblock]$SbUsbConPrOnline=
 {
 $ObjUsbConnectPrinters=@()
-    $dispPrinter=$Win32_Printer | Select-Object -Property Name,DriverName,Network,Local,PortName,WorkOffline,Published,Shared,ShareName,Direct,PrinterStatus,PrintProcessor
-    $dispPrinter | foreach {
+$dispPrinter=$Win32_Printer | Select-Object -Property Name,DriverName,Network,Local,PortName,WorkOffline,Published,Shared,ShareName,Direct,PrinterStatus,PrintProcessor
+$dispPrinter | foreach {
     if (($_.portname -match "Usb") -and ($_.local -eq $True) -and ($_.workOffline -eq $false))
-        {
+    {
         $ObjUsbConnectPrinter=New-Object psobject
         $ObjUsbConnectPrinter | Add-Member -NotePropertyName PrinterName -NotePropertyValue $_.name
         $ObjUsbConnectPrinter | Add-Member -NotePropertyName DriverName -NotePropertyValue $_.DriverName
         $ObjUsbConnectPrinters+=$ObjUsbConnectPrinter
-        }
+    }
                                                           
 
-    }
-
+}
 
 $ObjUsbConnectPrinters
+
 }
 
 [scriptblock]$SbUsbDevices=
 {
 $Win32_USBControllerDevice | foreach {[wmi]($_.dependent)} | Select-Object -Property Name
-
 }
+
 [scriptblock]$SbMemoryMaxIns=
 {
 $MemMaxinsCount=0													
@@ -732,17 +738,16 @@ $MemMaxinsCount
 
 [scriptblock]$SBOsProductKey=
 {
-try
-{
+try{
 $map="BCDFGHJKMPQRTVWXY2346789" 
 If((RegGetValue -Key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Value "PROCESSOR_ARCHITECTURE" -GetValue GetStringValue -ErrorAction Stop) -eq "AMD64")
-    {            
+{            
     $value=(RegGetValue -Key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Value "DigitalProductId4" -GetValue GetBinaryValue -ErrorAction Stop)[0x34..0x42]
-    }            
-    Else
-        {            
-        $value=(RegGetValue -Key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Value "DigitalProductId" -GetValue GetBinaryValue -ErrorAction Stop)[0x34..0x42]       
-        }
+}            
+Else
+{            
+    $value=(RegGetValue -Key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Value "DigitalProductId" -GetValue GetBinaryValue -ErrorAction Stop)[0x34..0x42]       
+}
 
 $ProductKey = ""  
                     
@@ -759,30 +764,23 @@ $ProductKey = ""
                       } 
                     }
                  
-    $ProductKey
+$ProductKey
 }
-catch
-    {
-    $_
-    }
+catch{$_}
+
 }
 
 [scriptblock]$SbGetRegistryValue=
 {
-try
-{
+try{
 RegGetValue -key $ReGistryKey -Value $ReGistryValue -GetValue $RegistryValueType -ErrorAction Stop
 }
-catch
-{
-$_
-}
+catch{$_}
 }
 
 [ScriptBlock]$SbSoftwareList=
 {
-try
-{
+try{
 $Object =@()
 $excludeArray = ("Security Update for Windows",
 "Update for Windows",
@@ -795,18 +793,15 @@ $excludeArray = ("Security Update for Windows",
 "Update for Microsoft Office"
 )
 
-
-$GetArch=RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Value "PROCESSOR_ARCHITECTURE" -GetValue GetStringValue -ErrorAction Stop
-
- 
- If($GetArch -eq "AMD64"){            
- $OSArch='64-bit'
- }            
-Else{            
-$OSArch='32-bit'            
+$GetArch=RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Value "PROCESSOR_ARCHITECTURE" -GetValue GetStringValue -ErrorAction Stop 
+If($GetArch -eq "AMD64")
+{            
+    $OSArch='64-bit'
+}            
+Else
+{            
+    $OSArch='32-bit'            
 }
-
-
 Switch ($OSArch)
 {
 
@@ -984,9 +979,9 @@ param(
 [string]$GetValue
 )
 if ($stdregprov -eq $null)
-    {
+{
     Write-Error "Variable StdRegProv Null"
-    }
+}
 $ResultProp=@{
 "GetStringValue"="Svalue"
 "GetBinaryValue"="Uvalue"
@@ -1009,42 +1004,40 @@ $hk=@{
 
 }
 if($Key -match "(.+?)\\(.+)")
-    {
+{
     if ($hk.Keys -eq $matches[1])
-        {
+    {
         $RootHive=$hk[$matches[1]]
         $KeyString=$matches[2]
         $StdRegProvResult=$StdRegProv | Invoke-WmiMethod -Name $GetValue -ArgumentList $RootHive,$KeyString,$Value
-        }
-        else
-            {
-            Write-Error "$($matches[1]) Does not belong to the set $($hk.Keys)" -ErrorAction Stop
-            }
-    if ($StdRegProvResult.returnvalue -ne 0)
-        {
-        if ($ErrorCode["$($StdRegProvResult.returnvalue)"] -ne $null)
-            {
-            $er=$ErrorCode["$($StdRegProvResult.returnvalue)"]
-            Write-Error "$Er! Key $Key Value $Value "
-            }
-            else
-                {
-                $er=$StdRegProvResult.returnvalue
-                Write-Error "$GetValue return $Er! Key $Key Value $Value "
-                }
-        
-        }
-        else
-            {
-            $StdRegProvResult.($ResultProp["$GetValue"])
-            }
     }
     else
+    {
+        Write-Error "$($matches[1]) Does not belong to the set $($hk.Keys)" -ErrorAction Stop
+    }
+    if ($StdRegProvResult.returnvalue -ne 0)
+    {
+        if ($ErrorCode["$($StdRegProvResult.returnvalue)"] -ne $null)
         {
-        Write-Error "$Key not valid"
+            $er=$ErrorCode["$($StdRegProvResult.returnvalue)"]
+            Write-Error "$Er! Key $Key Value $Value "
         }
-
-
+        else
+        {
+            $er=$StdRegProvResult.returnvalue
+            Write-Error "$GetValue return $Er! Key $Key Value $Value "
+        }
+        
+    }
+    else
+    {
+        $StdRegProvResult.($ResultProp["$GetValue"])
+    }
+}
+else
+{
+    Write-Error "$Key not valid"
+}
 
 }
 
@@ -1057,9 +1050,9 @@ param(
 )
 $ErrorActionPreference="Stop"
 if ($stdregprov -eq $null)
-    {
+{
     Write-Error "Variable StdRegProv Null"
-    }
+}
 $ErrorCode=@{
 "1"="Value doesn't exist"
 "2"="Key doesn't exist"
@@ -1075,77 +1068,78 @@ $hk=@{
 "HKEY_CURRENT_CONFIG"=2147483653
 }
 if($Key -match "(.+?)\\(.+)")
-    {
-    $StdRegProvResult=$StdRegProv.EnumKey($hk[$matches[1]],$matches[2])
+{
+$StdRegProvResult=$StdRegProv.EnumKey($hk[$matches[1]],$matches[2])
     if ($StdRegProvResult.returnvalue -ne 0)
-        {
+    {
         if ($ErrorCode["$($StdRegProvResult.returnvalue)"] -ne $null)
-            {
+        {
             $er=$ErrorCode["$($StdRegProvResult.returnvalue)"]
-            }
-            else
-                {
-                $er=$StdRegProvResult.returnvalue
-                }
-        Write-Error "$Er key $Key"
-        
         }
         else
-            {
-            $StdRegProvResult.snames
-            }
+        {
+            $er=$StdRegProvResult.returnvalue
+        }
+    Write-Error "$Er key $Key"
+        
     }
-        else
-            {
-            Write-Error "$Key not valid"
-            }
+    else
+    {
+        $StdRegProvResult.snames
+    }
+}
+else
+{
+    Write-Error "$Key not valid"
+}
 
 }
 #End Registry function 
 
 function StartRunspaceJob
 {
-param(
-$WmiVariable,
-$ScriptBlock,
-$ComputerName,
-$Prop
-)
-$ParamList=@{}
-$WmiVariable | Get-Member -MemberType NoteProperty  | foreach {$ParamList.Add($_.name,$WmiVariable.($_.name))}
-if ($PropertyParams[$prop] | Where-Object {$_.keys -eq "RunspaceImportVariable"})
+    param(
+    $WmiVariable,
+    $ScriptBlock,
+    $ComputerName,
+    $Prop
+    )
+    $ParamList=@{}
+    $WmiVariable | Get-Member -MemberType NoteProperty  | foreach {$ParamList.Add($_.name,$WmiVariable.($_.name))}
+    if ($PropertyParams[$prop] | Where-Object {$_.keys -eq "RunspaceImportVariable"})
     {
     $AddParam=@()
     $AddParam+=($PropertyParams[$prop] | Where-Object {$_.keys -eq "RunspaceImportVariable"}).RunspaceImportVariable
     $AddParam | foreach {
         if ($_ -match "^\$")
-            {
+        {
             $ParamList.Add($($_ -replace "\$",""),$(get-variable -name $($_ -replace "\$","") -ValueOnly))
-            }
-            else
-                {
-                Write-Error "RunspaceImportVariable Wrong param $_. Check FunctionConfig" -ErrorAction Stop
-                }
-    
         }
+        else
+        {
+            Write-Error "RunspaceImportVariable Wrong param $_. Check FunctionConfig" -ErrorAction Stop
+        }
+    
     }
 
-$PowerShell = [powershell]::Create()
-[void]$PowerShell.AddScript(
-$ScriptBlock
-)
-[void]$PowerShell.AddParameters($ParamList)
-$PowerShell.Runspacepool = $RunspacePool
-$State = $PowerShell.BeginInvoke()
-$temp = '' | Select PSJobTypeName,PowerShell,State,Location,StartTime,Property,Runspace
-$temp.PSJobTypeName="RunspaceJob"
-$temp.powershell=$PowerShell
-$temp.state=$State
-$temp.location=$Computername
-$temp.StartTime=get-date
-$temp.Property=$Prop
-$temp.runspace=$Runspace
-$temp
+    }
+
+    $PowerShell = [powershell]::Create()
+    [void]$PowerShell.AddScript(
+    $ScriptBlock
+    )
+    [void]$PowerShell.AddParameters($ParamList)
+    $PowerShell.Runspacepool = $RunspacePool
+    $State = $PowerShell.BeginInvoke()
+    $temp = '' | Select PSJobTypeName,PowerShell,State,Location,StartTime,Property,Runspace
+    $temp.PSJobTypeName="RunspaceJob"
+    $temp.powershell=$PowerShell
+    $temp.state=$State
+    $temp.location=$Computername
+    $temp.StartTime=get-date
+    $temp.Property=$Prop
+    $temp.runspace=$Runspace
+    $temp
 }
 
 function GetWmi{
@@ -1157,140 +1151,126 @@ $Count=0
 $WmiParamArray | foreach {
     $WmiParam=$_
     if ($Credential -ne $null)
-        {
+    {
         $LocalComputer=$env:COMPUTERNAME,"Localhost","127.0.0.1"
-        if (!($LocalComputer -eq $ComputerName))
+            if (!($LocalComputer -eq $ComputerName))
             {
-            if (!($WmiParam["Credential"]))
+                if (!($WmiParam["Credential"]))
                 {
-                $WmiParam.Add("Credential",$Credential)
+                    $WmiParam.Add("Credential",$Credential)
                 }
             
-            }
-        
-        }
-
-
-if ($jobs.count -ge $MaxJob)
+            }    
+    }
+    if ($jobs.count -ge $MaxJob)
     {
-    do {
+        do {
             $repeat=$true
             GetJob
             if ($Jobs.Count -lt $MaxJob)
-                {
+            {
                 $repeat=$false
-                }
-                else
-                    {
-                    Start-Sleep -Milliseconds 20
-                    }
-            
-             
             }
-            while($repeat)
+            else
+            {
+                Start-Sleep -Milliseconds 20
+            }   
+        }while($repeat)
     }
-$RemoveClass=$null
+    $RemoveClass=$null
     if ($WmiParam['Query'])
-        {
+    {
         $RemoveClass=$WmiParam['Class']
         $WmiParam.Remove("Class")
-        }
-if ($WmiParam['class'])
+    }
+    if ($WmiParam['class'])
     {
-    Write-Verbose "$Computername Start Job Get-WmiObject -Class $($WmiParam['class']) -NameSpace $($WmiParam['NameSpace'])"
+        Write-Verbose "$Computername Start Job Get-WmiObject -Class $($WmiParam['class']) -NameSpace $($WmiParam['NameSpace'])"
     }
     else
-        {
-        Write-Verbose "$Computername Start Job Get-WmiObject -Query $($WmiParam['Query']) -NameSpace $($WmiParam['NameSpace'])"
-        }
-$TmpWmiJob=Get-WmiObject @WmiParam -computername $ComputerName -ErrorAction Stop -AsJob   
-if ($?)
     {
-    $temp = '' | Select-Object PSJobTypeName,WmiJob,StartTime,Location,Class,Query
-    $temp.PSJobTypeName="WmiJob"
-    $temp.WmiJob=$TmpWmiJob
-    $temp.StartTime=Get-Date
-    $Temp.Location=$ComputerName
-    if ($RemoveClass)
-        {
-        $Temp.Class=$RemoveClass
-        $Temp.Query=$true
-        }
-        else
+        Write-Verbose "$Computername Start Job Get-WmiObject -Query $($WmiParam['Query']) -NameSpace $($WmiParam['NameSpace'])"
+    }
+    $TmpWmiJob=Get-WmiObject @WmiParam -computername $ComputerName -ErrorAction Stop -AsJob   
+    if ($?)
+    {
+        $temp = '' | Select-Object PSJobTypeName,WmiJob,StartTime,Location,Class,Query
+        $temp.PSJobTypeName="WmiJob"
+        $temp.WmiJob=$TmpWmiJob
+        $temp.StartTime=Get-Date
+        $Temp.Location=$ComputerName
+            if ($RemoveClass)
             {
-            $Temp.Class=$WmiParam['Class']
-            $Temp.Query=$False
+                $Temp.Class=$RemoveClass
+                $Temp.Query=$true
+            }
+            else
+            {
+                $Temp.Class=$WmiParam['Class']
+                $Temp.Query=$False
             }
     
-    [void]$Jobs.Add($temp) 
-    }
-
-if ($WmiParam['Query'])
-        {
-        $WmiParam.Add("Class",$RemoveClass)
+        [void]$Jobs.Add($temp) 
         }
-$Count++
-if ($Count -eq $WmiParamArray.count)
+
+    if ($WmiParam['Query'])
     {
-    Write-Verbose "$ComputerName All Wmi request completed"
-    [void]$GetWmicompletedForComputers.Add($ComputerName)   
-
-    
-
+        $WmiParam.Add("Class",$RemoveClass)
+    }
+    $Count++
+    if ($Count -eq $WmiParamArray.count)
+    {
+        Write-Verbose "$ComputerName All Wmi request completed"
+        [void]$GetWmicompletedForComputers.Add($ComputerName)   
     }
 
+#End Foreach
 }
-
-
-
 
 }
 
 function WrErr($Err,$Job)
 {
-try
-{
+try{
+
 if ($Job -eq $null)
+{
+    Write-Error "$Computername Job variable null" -ErrorAction Stop
+}
+if($tmperr=$Global:ErrorResult | Where-Object {$_.computername -eq $Job.location})
+{
+    if ($tmperr.warning -ne $err.Exception.Message)
     {
-       Write-Error "$Computername Job variable null" -ErrorAction Stop
+        Write-Warning  "$($Job.location) $($err.Exception.Message)"
+        $tmperr.warning=$tmperr.warning+","+$err.Exception.Message
     }
-    if($tmperr=$Global:ErrorResult | Where-Object {$_.computername -eq $Job.location})
-        {
-        if ($tmperr.warning -ne $err.Exception.Message)
-            {
-            Write-Warning  "$($Job.location) $($err.Exception.Message)"
-            $tmperr.warning=$tmperr.warning+","+$err.Exception.Message
-            }
-        }
-            else
-            {
-            Write-Warning  "$($Job.location) $($err.Exception.Message)"
-            $ErTmp="" | select ComputerName,Warning,Error
-            $ErTmp.ComputerName=$Job.location
-            $ErTmp.Warning=$err.Exception.Message
-            $ErTmp.Error=$err
-            $Global:ErrorResult+=$ErTmp
-            }
+}
+else
+{
+    Write-Warning  "$($Job.location) $($err.Exception.Message)"
+    $ErTmp="" | select ComputerName,Warning,Error
+    $ErTmp.ComputerName=$Job.location
+    $ErTmp.Warning=$err.Exception.Message
+    $ErTmp.Error=$err
+    $Global:ErrorResult+=$ErTmp
+}
 if ($Job.PSJobTypeName -eq "RunspaceJob")
-    {
-   $Job.powershell.dispose()
+{
+    $Job.powershell.dispose()
     $Job.State = $null
     $Job.powershell = $null
-    }
-
+}
 $RemoveJobs=$jobs | Where-Object {$_.location -eq $Job.location}
 $RemoveJobs  | foreach {$Jobs.Remove($_)}
+}catch{
+$Jobs.Remove($Job)
 }
-catch
-    {
-    $Jobs.Remove($Job)
-    }
+
 }
 
 function GetJob
 {
-try
-{
+try{
 
 #Write-Verbose "getjob"
 #Start-Sleep -Milliseconds 500
@@ -1298,27 +1278,25 @@ try
 $AllFailedWmiJobs=$Jobs | Where-Object  {$_.WmiJob.State -eq "Failed"}
 if ($AllFailedWmiJobs -ne $null)
 {
-$AllFailedWmiJobs | foreach{
-try{
-$Job=$_.WmiJob
-$TmpErRec=$Job | Receive-Job -ErrorAction Stop
-if ($TmpErRec -eq $null)
-    {
-    if ($VerbosePreference -eq "Continue")
+    $AllFailedWmiJobs | foreach {
+        try{
+        $Job=$_.WmiJob
+        $TmpErRec=$Job | Receive-Job -ErrorAction Stop
+        if ($TmpErRec -eq $null)
         {
-        Write-Warning "$($Job.location) $($_.Class) JobState Failed Get-WmiObject return Null Value"
-        
-        }
+            if ($VerbosePreference -eq "Continue")
+            {
+                Write-Warning "$($Job.location) $($_.Class) JobState Failed Get-WmiObject return Null Value"
+            }
             
+        }
+        Remove-Job $Job
+        $Jobs.Remove($_)
+        } catch {
+        WrErr -Err $_ -Job $Job
+        }
+    # End Foreach
     }
-Remove-Job $Job
-$Jobs.Remove($_)
-}
-catch
-    {
-    WrErr -Err $_ -Job $Job
-    }
-}
 }
 
 #Completed Job
@@ -1326,93 +1304,96 @@ $AllCompletedJobs=$Jobs | Where-Object {$_.WmiJob.State -eq "Completed"}
 #Completed Runspace Job
 $AllRunspaceCompletedJob=$jobs | Where-Object {$_.state.isCompleted}
 if ($AllRunspaceCompletedJob -ne $null)
-    {
+{
     $AllRunspaceCompletedJob | foreach {
         $Job=$_
         $TmpRes=$_.powershell.EndInvoke($_.State)
         if($_.powershell.HadErrors -eq $true)
-            {
+        {
             if ($TmpRes.count -eq 0)
-                {
+            {
                 Write-Error "Scriptblock HadErrors, use try{}catch{} in the ScriptBlock to find out the details" -ErrorAction Stop
-                }
-                elseif ($TmpRes[0].GetType().name -eq "ErrorRecord")
-                    {
-                    Write-Error $TmpRes[0] -ErrorAction Stop
-                    }
-                    else
-                        {
-                        Write-Error "Unknown Error" -ErrorAction Stop
-                        }
             }
-            elseif($TmpRes[0] -ne $null)
-                {
+            elseif ($TmpRes[0].GetType().name -eq "ErrorRecord")
+            {
+                Write-Error $TmpRes[0] -ErrorAction Stop
+            }
+            else
+            {
+                Write-Error "Unknown Error" -ErrorAction Stop
+            }
+        }
+        elseif($TmpRes[0] -ne $null)
+        {
                 if ($TmpRes[0].GetType().name -eq "ErrorRecord")
-                    {
+                {
                     Write-Error $TmpRes[0] -ErrorAction Stop
-                    }
-                Write-Verbose "$($Job.location) RunspaceJob for Property $($Job.property) Completed"
-                write-verbose "$($Job.location) Add to result $($Job.property)=[Scriptblock]$(($PropertyParams[$Job.property] | Where-Object {$_.Scriptblock}).ScriptBlock)"
-                $HashtableResult[$Job.location].($Job.property)=$TmpRes
-                $_.powershell.dispose()
-                $_.State = $null
-                $_.powershell = $null
-                $Jobs.Remove($Job)
-                
                 }
-                else
-                    {
-                    Write-Error "Scriptblock return empty value" -ErrorAction Stop
-                    }
+            Write-Verbose "$($Job.location) RunspaceJob for Property $($Job.property) Completed"
+            write-verbose "$($Job.location) Add to result $($Job.property)=[Scriptblock]$(($PropertyParams[$Job.property] | Where-Object {$_.Scriptblock}).ScriptBlock)"
+            $HashtableResult[$Job.location].($Job.property)=$TmpRes
+            $_.powershell.dispose()
+            $_.State = $null
+            $_.powershell = $null
+            $Jobs.Remove($Job)
+                
+        }
+        else
+        {
+            Write-Error "Scriptblock return empty value" -ErrorAction Stop
+        }
     
+    # End Foreach
     }
-    }
+}
 if($AllCompletedJobs -ne $null)
 {
-$AllCompletedJobs | foreach {
-$Job=$_.WmiJob
-$Computername=$_.location
-$GetWmi=@()
-$GetWmi+=Receive-Job -Job $Job -ErrorAction Stop
-if ($GetWmi.Count -eq 0 -or $GetWmi[0] -eq $null)
+    $AllCompletedJobs | foreach {
+        $Job=$_.WmiJob
+        $Computername=$_.location
+        $GetWmi=@()
+        $GetWmi+=Receive-Job -Job $Job -ErrorAction Stop
+        if ($GetWmi.Count -eq 0 -or $GetWmi[0] -eq $null)
+        {
+            if ($VerbosePreference -eq "Continue")
+            {
+                Write-Warning -Message "$Computername $($_.Class) Get-Wmiobject return empty value.."
+            }
+        }
+        else
+        {
+                if ($_.Query)
                 {
-                if ($VerbosePreference -eq "Continue")
-                    {
-                    Write-Warning -Message "$Computername $($_.Class) Get-Wmiobject return empty value.."
-                    }
+                    $GwmiClass=$_.Class
                 }
                 else
-                    {
-                    if ($_.Query)
-                        {
-                        $GwmiClass=$_.Class
-                        }
-                        else
-                            {
-                            $GwmiClass=$GetWmi[0].__CLASS
-                            }
+                {
+                    $GwmiClass=$GetWmi[0].__CLASS
+                }
                     
-                    if ($GetWmi.Count -eq 1)
-                        {
-                        $GetWmi=$Getwmi[0]
-                        }
-                    Write-Verbose "$Computername Receive-Job $GwmiClass Completed"
-                    $HashtableWMi[$ComputerName].$GwmiClass=$GetWmi
-                    }
-Remove-Job $Job -Force
-$Jobs.Remove($_)
-}
+                if ($GetWmi.Count -eq 1)
+                {
+                    $GetWmi=$Getwmi[0]
+                }
+            Write-Verbose "$Computername Receive-Job $GwmiClass Completed"
+            $HashtableWMi[$ComputerName].$GwmiClass=$GetWmi
+        }
+        
+        Remove-Job $Job -Force
+        $Jobs.Remove($_)
+    
+    # End Foreach
+    }
 
 }
 #Create Result
 $TmpGetWmicompletedForComputers=$GetWmicompletedForComputers.clone()
 $TmpGetWmicompletedForComputers | foreach {
-$ComputerName=$_
-if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
-        {
-        
+    $ComputerName=$_
+    if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
+    {
         if (!($Global:ErrorResult | Where-Object {$_.computername -eq $ComputerName}))
-            {
+        {
             #Create Variable
             $HashtableWMi[$computername] | Get-Member -MemberType NoteProperty | foreach {New-Variable -Name $_.Name -Value $HashtableWMi[$computername].$($_.Name)}
             
@@ -1422,21 +1403,18 @@ if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
                 $ParamProperty=($PropertyParams[$Property] | Where-Object {$_.Property}).Property
                 $ParamScriptblock=($PropertyParams[$Property] | Where-Object {$_.Scriptblock}).ScriptBlock
                 $Class=($PropertyParams[$Property] | Where-Object {$_.class}).class
-                
                 if ($Keys -eq "UseRunspace")
-                    {
+                {
                     if ($HashtableResult[$ComputerName].$Property -eq $null)
-                        {
+                    {
                         #Add param to Runspace scriptblock
                         $AddParam=@()
                         #Add all wmi variable
-                        $HashtableWMi[$computername] | Get-Member -MemberType NoteProperty | foreach {
-                        $AddParam+=('$'+$_.name)
-                        }
-                        if ($Keys -eq "RunspaceImportVariable")
+                        $HashtableWMi[$computername] | Get-Member -MemberType NoteProperty | foreach {$AddParam+=('$'+$_.name)}
+                            if ($Keys -eq "RunspaceImportVariable")
                             {
-                            #Add all RunspaceImportVariable
-                            $AddParam+=($PropertyParams[$property] | Where-Object {$_.runspaceimportvariable}).runspaceimportvariable
+                                #Add all RunspaceImportVariable
+                                $AddParam+=($PropertyParams[$property] | Where-Object {$_.runspaceimportvariable}).runspaceimportvariable
                             }
                         Write-Verbose -Message "$ComputerName Edit ScriptBlock [ScriptBlock]$($ParamScriptblock)"
                         $ScriptBlockParam = $ExecutionContext.InvokeCommand.NewScriptBlock("param($($AddParam -Join ", "))`r`n"+$(get-variable -name $($ParamScriptblock -replace "\$","") -ValueOnly).ToString())
@@ -1446,29 +1424,27 @@ if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
                         #It is mandatory to use this delay otherwise there are run-time errors
                         Start-Sleep -Milliseconds 200
                         
-                        }
-                    
                     }
-                
-                
+                    
+                }
                 if ($HashtableResult[$ComputerName].$Property -eq $null)
-                    {
-                    if ($ParamProperty)
+                {
+                        if ($ParamProperty)
                         {
-                        Write-Verbose ("$ComputerName Add to result $Property=$"+"$Class.$ParamProperty")
-                        $WmiVariables=Get-Variable -Name $Class -ValueOnly
-                        if ($WmiVariables.count -gt 1)
-                            {
-                            $ResultParamProperty=$WmiVariables | foreach {$_.$ParamProperty}
-                            }
-                            else
+                            Write-Verbose ("$ComputerName Add to result $Property=$"+"$Class.$ParamProperty")
+                            $WmiVariables=Get-Variable -Name $Class -ValueOnly
+                                if ($WmiVariables.count -gt 1)
                                 {
-                                $ResultParamProperty=$WmiVariables.$ParamProperty
+                                    $ResultParamProperty=$WmiVariables | foreach {$_.$ParamProperty}
                                 }
-                        $HashtableResult[$ComputerName].$Property=$ResultParamProperty
+                                else
+                                {
+                                    $ResultParamProperty=$WmiVariables.$ParamProperty
+                                }
+                            $HashtableResult[$ComputerName].$Property=$ResultParamProperty
                         }
                         elseif ($ParamScriptblock -and !($Keys -eq "UseRunspace" ))
-                            {
+                        {
                             Write-Verbose "$ComputerName Add to result $Property= [Scriptblock]$($ParamScriptblock)"
                             try
                                 {
@@ -1478,47 +1454,43 @@ if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
                                 {
                                 Write-Error -Message "Check Scriptblock [ScriptBlock]$ParamScriptblock $($_.Exception.message) $($_.InvocationInfo.PositionMessage)" -ErrorAction stop
                                 }
-                            }
-                            elseif (!($Keys -eq "UseRunspace" ))
-                                {
-                                Write-Verbose ("$ComputerName Add to result $Property=$"+"$Class")
-                                $WmiVariables=Get-Variable -Name $Class -ValueOnly
-                                $ResultParamProperty=$WmiVariables
-                                $HashtableResult[$ComputerName].$Property=$ResultParamProperty
-                                }
+                        }
+                        elseif (!($Keys -eq "UseRunspace" ))
+                        {
+                            Write-Verbose ("$ComputerName Add to result $Property=$"+"$Class")
+                            $WmiVariables=Get-Variable -Name $Class -ValueOnly
+                            $ResultParamProperty=$WmiVariables
+                            $HashtableResult[$ComputerName].$Property=$ResultParamProperty
+                        }
                     
                    
-                    }
-                    
-                        
-                    
-                    
-                #End Foreach
                 }
+                        
+                #End Foreach
+            }
     
-    #Remove Variable
-    $HashtableWMi[$computername] | Get-Member -MemberType NoteProperty | foreach {Remove-Variable -Name $_.name -Force}
-          if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
-            {
-            Write-Verbose -Message "$ComputerName All Job Completed"
-            
-            $Global:Result+=$HashtableResult[$ComputerName]
-           
-            if ($UpdateFormatData)
+            #Remove Variable
+            $HashtableWMi[$computername] | Get-Member -MemberType NoteProperty | foreach {Remove-Variable -Name $_.name -Force}
+                if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
+                {
+                    Write-Verbose -Message "$ComputerName All Job Completed"
+                    $Global:Result+=$HashtableResult[$ComputerName]
+                        if ($UpdateFormatData)
                         {
-                        CreateFormatPs1xml -ForObject $HashtableResult[$ComputerName] -ErrorAction Stop
-                        Update-FormatData -PrependPath $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -ErrorAction SilentlyContinue
-                        Set-Variable -Name UpdateFormatData -Value $false -Scope 1 -Force
+                            CreateFormatPs1xml -ForObject $HashtableResult[$ComputerName] -ErrorAction Stop
+                            Update-FormatData -PrependPath $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -ErrorAction SilentlyContinue
+                            Set-Variable -Name UpdateFormatData -Value $false -Scope 1 -Force
                         }
-            $HashtableResult[$ComputerName].psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.AutoFormatObject") 
-            $HashtableResult[$ComputerName]
-            $GetWmicompletedForComputers.remove($ComputerName)
-            }
-            }
+                    $HashtableResult[$ComputerName].psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.AutoFormatObject") 
+                    $HashtableResult[$ComputerName]
+                    $GetWmicompletedForComputers.remove($ComputerName)
+                }
+        }
 
         
         
-        }
+    }
+# End Foreach
 }
 
 
@@ -1527,27 +1499,27 @@ if (!($Jobs | Where-Object {$_.Location -eq $ComputerName}))
 $AllTimeOutJob=$Jobs | Where-Object {(New-TimeSpan -start $_.StartTime).TotalSeconds -gt $JobTimeOut}
 if ($AllTimeOutJob -ne $null)
 {
-$AllTimeOutJob | foreach {
-try
-{
-$Job=$_
-Write-Error -Message "Timeout expired" -ErrorAction Stop
-}
-catch
-    {
-    WrErr -Err $_ -Job $Job
+    $AllTimeOutJob | foreach {
+        try
+        {
+            $Job=$_
+            Write-Error -Message "Timeout expired" -ErrorAction Stop
+        }
+        catch
+        {
+            WrErr -Err $_ -Job $Job
+        }
+
     }
-
-}
 }
 
 }
 catch
 {
-WrErr -Err $_ -Job $Job
+    WrErr -Err $_ -Job $Job
 }
 
-
+# End Function
 }
 
 function CreateFormatPs1xml
@@ -1561,24 +1533,24 @@ $FormatTableFor="PSCustomObject","ManagementObject"
 [string]$XmlFormatList=''
 $DollarUnder='$_'
 $AllProperties | foreach{
-$Property=$_
-if ($Forobject.$Property.count -gt 1)
+    $Property=$_
+    if ($Forobject.$Property.count -gt 1)
     {
-    $ForObjectProperty=$Forobject.$Property[0]
+        $ForObjectProperty=$Forobject.$Property[0]
     }
     else
-        {
-        $ForObjectProperty=$Forobject.$Property
-        }
-if ($ForObjectProperty -eq $null)
     {
-    $XmlFormatList+="
-        <ListItem>
-            <PropertyName>$Property</PropertyName>
-        </ListItem>"
+        $ForObjectProperty=$Forobject.$Property
+    }
+    if ($ForObjectProperty -eq $null)
+    {
+        $XmlFormatList+="
+            <ListItem>
+                <PropertyName>$Property</PropertyName>
+            </ListItem>"
     }
     elseif ($FormatTableFor -eq ($ForObjectProperty).GetType().name)
-        {
+    {
         $XmlFormatList+="
         <ListItem>
         <Label>$Property</Label>
@@ -1586,27 +1558,28 @@ if ($ForObjectProperty -eq $null)
                 $DollarUnder.$Property | ft -autosize | out-string
             </ScriptBlock>
         </ListItem>"
-        }
-        elseif ($ConvertToGb -eq $Property)
-            {
+    }
+    elseif ($ConvertToGb -eq $Property)
+    {
                
-                $XmlFormatList+="<ListItem>
-                <Label>$Property</Label>
-                    <ScriptBlock>
-				    [string]('{0:N1}' -f ($DollarUnder.$property/1gb))+'Gb'
-                    </ScriptBlock>
-                </ListItem>"
+        $XmlFormatList+="<ListItem>
+        <Label>$Property</Label>
+            <ScriptBlock>
+		    [string]('{0:N1}' -f ($DollarUnder.$property/1gb))+'Gb'
+            </ScriptBlock>
+        </ListItem>"
                     
-            }
-        else
-            {
-            $XmlFormatList+="
-            <ListItem>
-                <PropertyName>$Property</PropertyName>
-            </ListItem>"
-            }
-
+    }
+    else
+    {
+        $XmlFormatList+="
+        <ListItem>
+            <PropertyName>$Property</PropertyName>
+        </ListItem>"
+    }
+# End Foreach
 }
+
 #$XmlFormatList
 $XmlAutoFormat='<?xml version="1.0" encoding="utf-8" ?>'
 $XmlAutoFormat+="
@@ -1634,6 +1607,7 @@ $XmlAutoFormat+="
 </Configuration>"
 Write-Verbose "Create ps1xml file $($env:TEMP+"\SystemInfoAutoformat.ps1xml")"
 $XmlAutoFormat | Out-File -FilePath $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -Force -ErrorAction Stop
+#End Function
 }
 
 Function ParseParam
@@ -1647,199 +1621,196 @@ $PermitParams="Class","ScriptBlock","UseRunspace","RunspaceImportVariable","Prop
 $ArrayHashTableParam=@()
 $ArrayParamString=(((($ParamString -replace "\s+"," ") -replace "\s+$","") -replace "^-"," -") -replace " -"," --") -split "\s-"
 $ArrayParamString | foreach {
-$HashTableParam=@{}
-if ($_ -match "^-(.+?)\s(.+)$")
+    $HashTableParam=@{}
+    if ($_ -match "^-(.+?)\s(.+)$")
     {
-    $ParseParam=$Matches[1]
-    $ParseValue=$Matches[2]
-    if ($ParseValue -match ",")
-        {
-        $ArrayParseValue=$ParseValue -split ","
-        $ParseValue=$ArrayParseValue
-        }
-    $HashTableParam.Add($ParseParam,$ParseValue)
-    $ArrayHashTableParam+=$HashTableParam
+        $ParseParam=$Matches[1]
+        $ParseValue=$Matches[2]
+            if ($ParseValue -match ",")
+            {
+                $ArrayParseValue=$ParseValue -split ","
+                $ParseValue=$ArrayParseValue
+            }
+        $HashTableParam.Add($ParseParam,$ParseValue)
+        $ArrayHashTableParam+=$HashTableParam
     
     }
     elseif ($_ -match "-(.+\S)")
-        {
+    {
         $HashTableParam.Add($Matches[1],$null)        
         $ArrayHashTableParam+=$HashTableParam
-        }
+    }
+# End Foreach
 }
 $DifObj=$ArrayHashTableParam | foreach {$_.keys}
 $CompareParam=Compare-Object -ReferenceObject $PermitParams -DifferenceObject $DifObj
 if ($CompareParam | where-object {$_.sideindicator -eq "=>"})
-    {
+{
     Write-Error "$Property Parameter -$(($CompareParam | Where-Object {$_.SideIndicator -eq "=>"}).inputobject) not allowed. Check FunctionConfig" -ErrorAction Stop
-    }
+}
 $ArrayHashTableParam
+
+#End Function
 }
 
 
 #End Block Function
 if ($PSBoundParameters['ShowStatistics'].ispresent)
-        {
-        $BeginFunction=get-date
-        }
+{
+    $BeginFunction=get-date
+}
 if ($PSBoundParameters['Credential'])
-    {
+{
     if (!($Credential.gettype().name -eq "PSCredential"))
-        {
+    {
         $Credential=Get-Credential $Credential
-        }
-
-     
-    }
+    }    
+}
 #Clear Old Job
 Write-Verbose "Clear old Job"
 Get-Job | where-object {$_.PSJobTypeName -eq "wmijob"} | Remove-Job -Force
 #Check registry param
- try
+try
 {
-if ($PSBoundParameters["RegistryKey"] -ne $null -or $PSBoundParameters["RegistryValue"] -ne $null -or $PSBoundParameters["RegistryValueType"] -ne $null)
+    if ($PSBoundParameters["RegistryKey"] -ne $null -or $PSBoundParameters["RegistryValue"] -ne $null -or $PSBoundParameters["RegistryValueType"] -ne $null)
     {
-    if ($PSBoundParameters["RegistryKey"] -eq $null)   
+        if ($PSBoundParameters["RegistryKey"] -eq $null)   
         {
-        $RegistryKey=Read-Host -Prompt "RegistryKey"
+            $RegistryKey=Read-Host -Prompt "RegistryKey"
         }
-    if ($PSBoundParameters["RegistryValue"] -eq $null)
+        if ($PSBoundParameters["RegistryValue"] -eq $null)
         {
-        $RegistryValue=Read-Host -Prompt "RegistryValue"
+            $RegistryValue=Read-Host -Prompt "RegistryValue"
         }
-    if ($PSBoundParameters["RegistryValueType"] -eq $null)
+        if ($PSBoundParameters["RegistryValueType"] -eq $null)
         {
-        $RegistryValueType=Read-Host -Prompt "RegistryValueType"
+            $RegistryValueType=Read-Host -Prompt "RegistryValueType"
         }
     
     $Properties+="RegistryValue"
     }
+
 }
 catch
-    {
+{
     Write-Error "$_" -ErrorAction Stop
-    } 
+} 
 
 #Collection all Properties
 $AllPropertiesSwitch=@()
 $AllPropertiesSwitch+=$PSBoundParameters.Keys | foreach {
-if ($PSBoundParameters[$_].ispresent -and !($ExcludeParam -eq $_))
+    if ($PSBoundParameters[$_].ispresent -and !($ExcludeParam -eq $_))
     {
-      $SwitchConfig[$_]        
+        $SwitchConfig[$_]        
     }
 
 }
 if ($AllPropertiesSwitch[0] -eq $Null -and $Properties -eq $null)
-    {
-    $AllPropertiesSwitch=$DefaultInfoConfig
-    
-    }
-    
+{
+    $AllPropertiesSwitch=$DefaultInfoConfig   
+}
 $AllProperties+=$AllPropertiesSwitch+$Properties
-
 if ($AllProperties.GetType().name -ne "string")
-    {
+{
     $AllProperties=0..$AllProperties.Count | foreach {if ($AllProperties[$_] -ne $null){$AllProperties[$_]}}
     $AllProperties = $AllProperties | Select-Object -Unique
-    }
-
+}
 if ($AllProperties -match "\*")
-    {
+{
     Write-Verbose "Property: $($FunctionConfig.Keys)"
     $AllProperties=$FunctionConfig.Keys -ne "RegistryValue"
-    }
-    else
-        {
-        Write-Verbose "Property: $AllProperties"
-        }
+}
+else
+{
+    Write-Verbose "Property: $AllProperties"
+}
 
 
 #Parse FunctionConfig
 $PropertyParams=@{}
 $AllProperties | foreach {
-$FunctionProperty=$_
-$ArrayHashTableParam=@()
-if ($FunctionConfig[$FunctionProperty] -eq $Null)
+    $FunctionProperty=$_
+    $ArrayHashTableParam=@()
+    if ($FunctionConfig[$FunctionProperty] -eq $Null)
     {
-    Write-Error "Property $FunctionProperty not found in $('$FunctionConfig')" -ErrorAction Stop
+        Write-Error "Property $FunctionProperty not found in $('$FunctionConfig')" -ErrorAction Stop
     }
-
-
-$ArrayHashTableParam+=ParseParam -ParamString $FunctionConfig[$FunctionProperty] -Property $FunctionProperty
-if ($QueryTmp=$($ArrayHashTableParam | where-object {$_.Query}))
+    $ArrayHashTableParam+=ParseParam -ParamString $FunctionConfig[$FunctionProperty] -Property $FunctionProperty
+    if ($QueryTmp=$($ArrayHashTableParam | where-object {$_.Query}))
     {
-    if ($QueryTmp.Query -match ".+from\s(.+?)\s")
-        {
-        $TmpClass="Query_"+$Matches[1]+"_"+$FunctionProperty
-        }
-        else
+            if ($QueryTmp.Query -match ".+from\s(.+?)\s")
             {
-            Write-Error "Wrong query $($QueryTmp.Query)! Check query param." -ErrorAction Stop
+                $TmpClass="Query_"+$Matches[1]+"_"+$FunctionProperty
             }
-    if ($TmpClassHash=$ArrayHashTableParam | where-object {$_.class})
-        {
-        $TmpArrayClass=@()
-        $TmpArrayClass+=$TmpClassHash.Class
-        $TmpArrayClass+=$TmpClass
-        $TmpClassHash.Class=$TmpArrayClass
-        }
-        else
+            else
             {
-            $TmpClassHash=@{
-            Class="$TmpClass"
+                Write-Error "Wrong query $($QueryTmp.Query)! Check query param." -ErrorAction Stop
             }
-            $ArrayHashTableParam+=$TmpClassHash
+            if ($TmpClassHash=$ArrayHashTableParam | where-object {$_.class})
+            {
+                $TmpArrayClass=@()
+                $TmpArrayClass+=$TmpClassHash.Class
+                $TmpArrayClass+=$TmpClass
+                $TmpClassHash.Class=$TmpArrayClass
+            }
+            else
+            {
+                $TmpClassHash=@{
+                Class="$TmpClass"
+                }
+                $ArrayHashTableParam+=$TmpClassHash
             }
     
     }
 
-if ($($ArrayHashTableParam | where-object {$_.class}) -ne $null)
+    if ($($ArrayHashTableParam | where-object {$_.class}) -ne $null)
     {
-    $PropertyParams.Add($FunctionProperty,$ArrayHashTableParam)
+        $PropertyParams.Add($FunctionProperty,$ArrayHashTableParam)
     }
     else
-        {
+    {
         Write-Error "$FunctionProperty missing -Сlass parameter. Check FunctionConfig" -ErrorAction Stop
-        }
-
+    }
+# End Foreach
 }
 
 #Check ScriptBlock param
 $PropertyParams.keys | foreach {
-try
-{
-$UserProperty=$_
-$ParamHashTable=$PropertyParams[$UserProperty]
-$ParamScriptblock=$ParamHashTable | Where-Object {$_.keys -eq "Scriptblock"}
-if ($ParamScriptblock)
+    try
     {
-    if ($ParamScriptblock.scriptblock -eq $null)
+        $UserProperty=$_
+        $ParamHashTable=$PropertyParams[$UserProperty]
+        $ParamScriptblock=$ParamHashTable | Where-Object {$_.keys -eq "Scriptblock"}
+        if ($ParamScriptblock)
         {
-        Write-Error "parameter -ScriptBlock is empty. Check FunctionConfig" -ErrorAction Stop
-        }
-        else
+            if ($ParamScriptblock.scriptblock -eq $null)
             {
-            if ($ParamScriptblock.scriptblock -match "\$.+\S")
+                Write-Error "parameter -ScriptBlock is empty. Check FunctionConfig" -ErrorAction Stop
+            }
+            else
+            {
+                if ($ParamScriptblock.scriptblock -match "\$.+\S")
                 {
-                if((get-variable -Name $($ParamScriptblock.scriptblock -replace "\$","") -ValueOnly -ErrorAction Stop).GetType().Name -ne "Scriptblock")
-                    {
-                    Write-Error "Wrong variable type $($ParamScriptblock.scriptblock). Check FunctionConfig, Use [Scriptblock]" -ErrorAction Stop
-                    }
+                        if((get-variable -Name $($ParamScriptblock.scriptblock -replace "\$","") -ValueOnly -ErrorAction Stop).GetType().Name -ne "Scriptblock")
+                        {
+                            Write-Error "Wrong variable type $($ParamScriptblock.scriptblock). Check FunctionConfig, Use [Scriptblock]" -ErrorAction Stop
+                        }
     
                 }
                 else
-                    {
+                {
                     Write-Error "Wrong -Scriptblock variable $($ParamScriptblock.scriptblock). Check FunctionConfig" -ErrorAction Stop
-                    }
+                }
             }
     
 
+        }
     }
-}
-catch
+    catch
     {
-    Write-Error "$UserProperty $($_.Exception.message)" -ErrorAction Stop
+        Write-Error "$UserProperty $($_.Exception.message)" -ErrorAction Stop
     }    
+# End Foreach
 }
 
     
@@ -1847,66 +1818,65 @@ catch
 #Create wmi param
 $WmiParamArray=@()
 $PropertyParams.Keys | foreach {$PropertyParams[$_]} | foreach {$_.class} | Sort-Object -Unique | foreach {
-$Query=$null
-$WmiParam=@{}
-$FakeClass=$_
-$Class=$_
+    $Query=$null
+    $WmiParam=@{}
+    $FakeClass=$_
+    $Class=$_
 
-if ($Class -match "^Query_(.+)?_(.+)")
+    if ($Class -match "^Query_(.+)?_(.+)")
     {
-    $Class=$Matches[1]
-    $Query=($PropertyParams[$Matches[2]] | Where-Object {$_.query}).query
+        $Class=$Matches[1]
+        $Query=($PropertyParams[$Matches[2]] | Where-Object {$_.query}).query
     }
-if ($ManualNamespace[$Class])
+    if ($ManualNamespace[$Class])
     {
-    $ManualNamespaceParams=ParseParam -ParamString $($ManualNamespace[$Class])
-    $ManualNamespaceParamNamespace= $ManualNamespaceParams | Where-Object {$_.namespace}
-    $ManualNamespaceParamQuery= $ManualNamespaceParams | Where-Object {$_.Query}
-    if ($ManualNamespaceParamNamespace)
-        {
-        $Namespace=$ManualNamespaceParamNamespace["Namespace"]
-        
-        }
-    if ($ManualNamespaceParamQuery -and $query -eq $null)
-        {
-        $Query=$ManualNamespaceParamQuery["Query"]
-        }   
+        $ManualNamespaceParams=ParseParam -ParamString $($ManualNamespace[$Class])
+        $ManualNamespaceParamNamespace= $ManualNamespaceParams | Where-Object {$_.namespace}
+        $ManualNamespaceParamQuery= $ManualNamespaceParams | Where-Object {$_.Query}
+            if ($ManualNamespaceParamNamespace)
+            {
+                $Namespace=$ManualNamespaceParamNamespace["Namespace"]
+            }
+            if ($ManualNamespaceParamQuery -and $query -eq $null)
+            {
+                $Query=$ManualNamespaceParamQuery["Query"]
+            }   
     
     }
     else
-        {
+    {
         try
-            {
+        {
             if ((Get-WmiObject -query "SELECT * FROM meta_class WHERE __class = '$Class'").__NAMESPACE -eq "ROOT\cimv2")
-                {
+            {
                 $Namespace="ROOT\cimv2"
-                }
-                else
-                    {
-                    Write-Error 'Cannot retrieve Namespace use $ManualNamespace hashtable' -ErrorAction Stop
-                    } 
             }
-            catch
-                {
-                Write-Error "Cannot retrieve Namespace for class $Class check Functionconfig or use hashtable $('$ManualNamespace') " -ErrorAction Stop
-                }
+            else
+            {
+                Write-Error 'Cannot retrieve Namespace use $ManualNamespace hashtable' -ErrorAction Stop
+            } 
         }
-$WmiParam.Add("Class",$FakeClass)
-$WmiParam.Add("Namespace",$Namespace)
-if ($Query)
-    {
-    $WmiParam.Add("Query",$Query)
-    $ManualNamespaceParamQuery=$Null
+        catch
+        {
+            Write-Error "Cannot retrieve Namespace for class $Class check Functionconfig or use hashtable $('$ManualNamespace') " -ErrorAction Stop
+        }
     }
-if ($WmiParam.class -ne $Null -and $WmiParam.Namespace -ne $Null)
+    $WmiParam.Add("Class",$FakeClass)
+    $WmiParam.Add("Namespace",$Namespace)
+    if ($Query)
     {
-    $WmiParamArray+=$WmiParam
+        $WmiParam.Add("Query",$Query)
+        $ManualNamespaceParamQuery=$Null
+    }
+    if ($WmiParam.class -ne $Null -and $WmiParam.Namespace -ne $Null)
+    {
+        $WmiParamArray+=$WmiParam
     }
     else
-        {
+    {
         Write-Error "Class or Namspace not found" -ErrorAction Stop
-        }
-
+    }
+#End Foreach
 }
 
 #$WmiParamArray
@@ -1914,37 +1884,35 @@ if ($WmiParam.class -ne $Null -and $WmiParam.Namespace -ne $Null)
 
 $OpenRunspace=$false
 if (($PropertyParams.keys | foreach {$PropertyParams[$_]} | foreach {$_.keys}) -eq "UseRunspace")
-    {
+{
     $OpenRunspace=$true
-    }
+}
     
 #Import function to runspace
 $RunspaceImportFunction="RegGetValue","RegEnumKey"
 if ($OpenRunspace)
-    {
+{
     Write-Verbose "Use Runspace"
     $SessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
     Get-Command -CommandType Function -Name $RunspaceImportFunction | foreach {
-    $SessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $_.name, $_.Definition
-    $SessionState.Commands.Add($SessionStateFunction)
+        $SessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $_.name, $_.Definition
+        $SessionState.Commands.Add($SessionStateFunction)
     }
-    if ($?)
+        if ($?)
         {
-        Write-Verbose "Runspace Commands Add Successfully"
-        }
-    
-    
+            Write-Verbose "Runspace Commands Add Successfully"
+        } 
     $RunspacePool = [runspacefactory]::CreateRunspacePool(1,$MaxJob,$SessionState,$Host)
     $RunspacePool.Open()
-    }
+}
 
 
 #Remove old ps1xml file
 if (Test-Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml"))
-    {
+{
     Write-Verbose "Remove ps1xml file $($env:TEMP+"\SystemInfoAutoformat.ps1xml")"
     Remove-Item -Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -Force
-    }
+}
 
 $computers=@()
 $jobs = New-Object System.Collections.ArrayList
@@ -1956,74 +1924,66 @@ $Global:ErrorResult=@()
 $UpdateFormatData=$true
 
 if ($PSBoundParameters["AppendToResult"].IsPresent)
-    {
+{
     if (!(Get-Variable -Name Result -Scope Global))
-        {
+    {
         $Global:Result=@()
-        }
-        elseif((Get-Variable -Name Result -Scope Global -ValueOnly).count -eq $null)
-            {
-            $OldRes=$Global:Result
-            $Global:Result=@()
-            $Global:Result+=$OldRes
-            }
     }
-    else
-        {
+    elseif((Get-Variable -Name Result -Scope Global -ValueOnly).count -eq $null)
+    {
+        $OldRes=$Global:Result
         $Global:Result=@()
-        }
+        $Global:Result+=$OldRes
+    }
+}
+else
+{
+    $Global:Result=@()
+}
 
 $CountComputers=0
 }
 process
 {
-   $computers=@()
-   if ($Name -ne $null)
-        {
-
-                $computers+=$Name
-                
-                    
-        }
-
+$computers=@()
+if ($Name -ne $null)
+{
+    $computers+=$Name                
+}
 
 $computers| foreach {
-$CountComputers++
-$TmpObjectProp=@{
-ComputerName=$_
-}
-$TmpObjectWmiProp=@{}
-$AllProperties | foreach {
-$TmpObjectProp.add($_,$null)  
-}
-$WmiParamArray | foreach {
-    $WmiParam=$_
-$TmpObjectWmiProp.Add($WmiParam["Class"],$null)
+    $CountComputers++
 
-}
-$TmpObject=New-Object psobject -Property $TmpObjectProp
-$TmpObjectWmi=New-Object psobject -Property $TmpObjectWmiProp
-
-
-#$TmpObject | Add-Member -NotePropertyName ComputerName -NotePropertyValue $_
-
-#$TmpObject.ComputerName=$_
-if (!($HashtableResult[$_]))
-    {
-    [void]$HashtableResult.Add($_,$TmpObject)
+    $TmpObjectProp=@{
+    ComputerName=$_
     }
-if (!($HashtableWMi[$_]))
-    {
-    [void]$HashtableWMi.Add($_,$TmpObjectWmi)
+    $TmpObjectWmiProp=@{}
+    $AllProperties | foreach {
+        $TmpObjectProp.add($_,$null)  
     }
-try
-{
-GetWmi -WmiParamArray $WmiParamArray -ComputerName $_
-}
-catch
+    $WmiParamArray | foreach {
+        $WmiParam=$_
+        $TmpObjectWmiProp.Add($WmiParam["Class"],$null)
+    }
+    $TmpObject=New-Object psobject -Property $TmpObjectProp
+    $TmpObjectWmi=New-Object psobject -Property $TmpObjectWmiProp
+    #$TmpObject | Add-Member -NotePropertyName ComputerName -NotePropertyValue $_
+    #$TmpObject.ComputerName=$_
+    if (!($HashtableResult[$_]))
     {
-    Write-Error "$_ getwmi error"
+        [void]$HashtableResult.Add($_,$TmpObject)
+    }
+    if (!($HashtableWMi[$_]))
+    {
+        [void]$HashtableWMi.Add($_,$TmpObjectWmi)
+    }
+    try{
+    GetWmi -WmiParamArray $WmiParamArray -ComputerName $_
+    }
+    catch{
+        Write-Error "$_ getwmi error"
     }   
+#End Foreach
 }
 
 
@@ -2031,49 +1991,50 @@ catch
 end
 {
 do {
-$repeat=$false
-GetJob
-if ($Jobs.Count -ne 0)
-    {
-    $repeat=$true
-    }
+    $repeat=$false
+    GetJob
+        if ($Jobs.Count -ne 0)
+        {
+            $repeat=$true
+        }
 }
 while($repeat)
 
 $Global:ErrorResult=$Global:ErrorResult | Sort-Object -Property Warning
 if ($Global:ErrorResult -eq $null)
-    {
+{
     $ErrResCount=0
-    }
-    elseif ($Global:ErrorResult.count -eq $null)
-        {
-        $ErrResCount=1
-        }
-        else
-            {
-            $ErrResCount=$Global:ErrorResult.count
-            }
+}
+elseif ($Global:ErrorResult.count -eq $null)
+{
+    $ErrResCount=1
+}
+else
+{
+    $ErrResCount=$Global:ErrorResult.count
+}
 
 $ResultCount=$Global:Result.count
 if ($Global:Result.Count -eq 1)
-    {
+{
     $Global:Result=$Global:Result | foreach {$_}
-    }
+}
         
 if ($RunspacePool -ne $null)
-    {
+{
     $RunspacePool.close()
-    }
+}
 #Write-Verbose "Clear all failed wmi job"
 #Get-Job | Where-Object {$_.State -eq "Failed"} | Remove-Job -Force
 if ($PSBoundParameters['ShowStatistics'].ispresent)
-    {
+{
     Write-Verbose  "Function running  $((New-TimeSpan -Start $BeginFunction).TotalSeconds) seconds" -Verbose
     Write-Verbose  "Total Computers   $CountComputers" -Verbose
     Write-Verbose  "Success           $ResultCount" -Verbose
     Write-Verbose  "Errors            $ErrResCount" -Verbose
-    }
+}
 
+#End Function
 }
 
 
