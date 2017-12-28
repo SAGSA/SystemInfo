@@ -89,7 +89,10 @@
 .EXAMPLE
     Get-Content -Path C:\Computers.txt | Get-SystemInfo -Properties MemoryTotal,OsLoggedInUser -WarningAction SilentlyContinue | Where-Object {$_.memorytotal -lt 1.5gb}
     This command gets computers that have a RAM size less than 1.5 gb. List of computers is taken from the file C:\Computers.txt. This command use parameter -WarningAction SilentlyContinue to ignore warning.
-
+    
+.EXAMPLE
+    Get-Content -Path C:\Computers.txt  | Get-SystemInfo -Properties OsLoggedInUser,HddSmart | Where-Object {$_.hddsmart.smartstatus -eq "Critical" -or $_.hddsmart.smartstatus -eq "Warning"}
+    This command gets computers that have hard disk problems
 .EXAMPLE
     $Computers=Get-Content -Path C:\Computers.txt
     Get-SystemInfo -Computername $Computers | ConvertTo-Html -Head "SystemInformation" | Out-File -FilePath C:\report.html
