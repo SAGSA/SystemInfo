@@ -193,6 +193,7 @@ Information | Property | Description |
 | HDD | HddDevices |Get Hdd devices |
 | | HddDevCount |Get Hdd device count |
 | | HddPredictFailure |Get HddPredictFailure |
+| | HddSmart | Get Hdd Smart |
 | Video | VideoModel |Get Video Model |
 | | VideoRam |Get Video Ram |
 | | VideoProcessor |Get Video Processor |
