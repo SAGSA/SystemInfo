@@ -73,7 +73,7 @@
                 <Alignment>left</Alignment>
               </TableColumnHeader>
 			  <TableColumnHeader>
-                <Label>PredictFailure</Label>
+                <Label>SmartStatus</Label>
                 <Alignment>left</Alignment>
               </TableColumnHeader>
             </TableHeaders>
@@ -90,7 +90,7 @@
                     <PropertyName>Model</PropertyName>
                   </TableColumnItem>
 				  <TableColumnItem>
-                    <PropertyName>PredictFailure</PropertyName>
+                    <PropertyName>SmartStatus</PropertyName>
                   </TableColumnItem>
                 </TableColumnItems>
               </TableRowEntry>
