@@ -1,0 +1,1 @@
+$Win32_PhysicalMemoryArray | foreach {$_.memorydevices}

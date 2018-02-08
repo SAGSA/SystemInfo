@@ -1,0 +1,1 @@
+$Win32_OperatingSystem.FreePhysicalMemory*1kb

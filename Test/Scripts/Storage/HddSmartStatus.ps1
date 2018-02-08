@@ -1,0 +1,1 @@
+GetHddSmart | foreach {$_.smartstatus}
