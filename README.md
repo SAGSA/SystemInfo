@@ -13,11 +13,12 @@ $Result-contains successful queries,
 
 $ErrorResult-contains computers that have errors.
 ## Module Installation
+If you use powershell v5 or later, run powershell command Install-Module -Name Systeminfo
+else
 1. Find your PSModule paths by running $env:PSModulePath.Split(";") in a Powershell prompt
-2. Place a folder in any one of these paths named Systeminfo
-3. Place systeminfo.psm1,systeminfo.psd1,systeminfo.format.ps1xml inside of this folder
-4. Restart powershell console
-5. If you have Powershell 3 or higher running the command Get-SystemInfo will automatically import the module, otherwise you'll need to run Import-Module SystemInfo and then run the command.
+2. Copy the folder SystemInfo to any one of these paths
+3. Restart powershell console
+4. If you have Powershell 3 or higher running the command Get-SystemInfo will automatically import the module, otherwise you'll need to run Import-Module SystemInfo and then run the command.
 ## Help usage
 After installation, you can use the help. Run the command Get-Help Get-SystemInfo
 ## How to use
@@ -44,10 +45,10 @@ MemoryModules    :
 
 
 HddDevices       :
-                   Size  InterfaceType Model                           PredictFailure
+                   Size  InterfaceType Model                           SmartStatus
                    ----  ------------- -----                           --------------
-                   112Gb IDE           KINGSTON SHFS37A120G ATA Device False
-                   149Gb IDE           ST3160813AS ATA Device          False
+                   112Gb IDE           KINGSTON SHFS37A120G ATA Device OK
+                   149Gb IDE           ST3160813AS ATA Device          OK
 
 
 
