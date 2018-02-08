@@ -13,7 +13,7 @@ $Result-contains successful queries,
 
 $ErrorResult-contains computers that have errors.
 ## Module Installation
-If you use powershell v5 or later, run powershell command Install-Module -Name Systeminfo,
+If you use powershell v5 or later, run powershell command Install-Module -Name Systeminfo -Scope CurrentUser,
 else
 1. Find your PSModule paths by running $env:PSModulePath.Split(";") in a Powershell prompt
 2. Copy the folder SystemInfo to any one of these paths
