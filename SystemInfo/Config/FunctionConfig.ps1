@@ -7,7 +7,7 @@ $FunctionConfig=@{
 
 #Os section
 
-OsVersion=          '-class Win32_OperatingSystem -Property Version'
+OsVersion=          '-Class Win32_OperatingSystem -Property Version'
 OsCaption=          '-Class Win32_OperatingSystem -Property Caption'
 OSArchitecture=     '-Class Win32_OperatingSystem -Property OSArchitecture'
 OsInstallDate=      '-Class Win32_OperatingSystem -Script OS\OsInstallDate.ps1'
@@ -16,6 +16,7 @@ OsProductKey=       '-Class StdRegProv            -Script OS\OsProductKey.ps1'
 OsLoggedInUser=     '-Class Win32_ComputerSystem  -Property UserName'
 OsAdministrators=   '-Class Win32_OperatingSystem -Script OS\OsAdministrators.ps1'
 OsActivationStatus= '-Query Select * From SoftwareLicensingProduct Where ApplicationID = "55c92734-d682-4d71-983e-d6ec3f16059f" And Licensestatus > 0 -Script OS\OsActivationStatus.ps1'
+AntivirusStatus=    '-Class Win32_OperatingSystem -Script OS\AntivirusStatus.ps1'
 
 #Memory section
 
@@ -88,6 +89,10 @@ HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus
 HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmart.ps1'
 HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmartStatus.ps1'
 
+#Vulnerabilities section
+
+MeltdownSpectreStatus='-Class Win32_OperatingSystem,StdRegProv,Win32_Processor,Win32_QuickFixEngineering   -Script Vulnerabilities\MeltdownSpectreStatus.ps1'
+EternalBlueStatus=    '-Class Win32_OperatingSystem,Win32_QuickFixEngineering,StdRegProv                   -Script Vulnerabilities\EternalBlueStatus.ps1'
 #End config
 }
 
@@ -103,7 +108,7 @@ StdRegProv='-Namespace ROOT\default'
 #Config Switch Param
 
 $SwitchConfig=@{
-OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsProductKey","OsLoggedInUser","OsActivationStatus",'OsAdministrators'
+OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsLoggedInUser","OsActivationStatus","OsAdministrators","AntivirusStatus"
 Cpu="CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad"
 Hdd="HddDevices"
 Motherboard="Motherboard","MotherboardModel","DeviceModel"
@@ -114,6 +119,7 @@ NetworkAdapter="NetworkAdapters","NetPhysAdapCount"
 PrinterInfo="Printers","UsbConPrCount","IsPrintServer","UsbConPrOnline"
 UsbDevices="UsbDevices"
 SoftwareList="SoftwareList"
+CheckVulnerabilities="OsCaption","OsLoggedInUser","MeltdownSpectreStatus","EternalBlueStatus"
 }
 
 #Exclude switch Param

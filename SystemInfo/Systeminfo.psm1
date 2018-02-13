@@ -3,7 +3,7 @@
     Very fast displays system information on a local or remote computer.
 .DESCRIPTION
     The function uses WMI to collect information related to the characteristics of the computer
-    The function uses multithreading. Multithreading is implemented through powershell runspace and WMI Job
+    The function uses multithreading. Multithreading is implemented through powershell runspace and PsJob
     The function allows you to quickly get the system information of a large number of computers on the network
     After executing, two variables are created: 
     $Result-contains successful queries, 
@@ -13,7 +13,7 @@
     By default, the value of this parameter is 50.
 .PARAMETER JobTimeout
     Specifies the amount of time that the function waits for a response from the wmi job or runspace job.
-    By default, the value of this parameter is 60 seconds.
+    By default, the value of this parameter is 120 seconds.
 .PARAMETER Protocol
     Defines the connection protocol to remote machine
     By default DCOM protocol
@@ -101,6 +101,7 @@ function Get-SystemInfo
             [switch]$PrinterInfo,
             [switch]$UsbDevices,
             [switch]$SoftwareList,
+            [switch]$CheckVulnerabilities,
             $Credential,
             [ValidateSet("Dcom","Wsman")]
             $Protocol="Dcom",
@@ -110,13 +111,13 @@ function Get-SystemInfo
             [int]$MaxWmiJob=20,
             [Alias("Timeout")]
             [ValidateRange(1,6000)]
-            [int]$JobTimeOut=60,
+            [int]$JobTimeOut=120,
             [switch]$AppendToResult,  
             [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsLoggedInUser","OsProductKey","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
-            "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HddDevCount","HDDSmart",
+            "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","CPULoad","SoftwareList","RegistryValue","OsAdministrators","OsActivationStatus")] 
-            [array]$Properties
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","CPULoad","SoftwareList","OsAdministrators","OsActivationStatus","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
+            [string[]]$Properties
             
             )
 begin
@@ -165,7 +166,7 @@ $LoadScripts | foreach {
 #####################################################################################################
 $BeginFunction=get-date
 
-if ($PSBoundParameters['Credential'])
+if ($PSCmdlet.MyInvocation.BoundParameters['Credential'])
 {
     if (!($Credential.gettype().name -eq "PSCredential"))
     {
@@ -177,8 +178,7 @@ Write-Verbose "Clear old Job"
 Get-Job | Where-Object {$_.state -ne "Running"} | Remove-Job -Force
 
 #Collection all Properties
-$AllPropertiesSwitch=@()
-$AllPropertiesSwitch+=$PSCmdlet.MyInvocation.BoundParameters.keys | foreach {
+[string[]]$AllPropertiesSwitch+=$PSCmdlet.MyInvocation.BoundParameters.keys | foreach {
     if ($PSCmdlet.MyInvocation.BoundParameters[$_].ispresent -and !($ExcludeParam -eq $_))
     {
         $SwitchConfig[$_]        
@@ -187,18 +187,12 @@ $AllPropertiesSwitch+=$PSCmdlet.MyInvocation.BoundParameters.keys | foreach {
 
 }
 
-if ($AllPropertiesSwitch[0] -eq $Null -and $Properties -eq $null)
+if ($AllPropertiesSwitch -eq $Null -and $Properties -eq $null)
 {
     $AllPropertiesSwitch=$DefaultInfoConfig   
 }
 $AllProperties+=$AllPropertiesSwitch+$Properties
-
-if ($AllProperties.GetType().name -ne "string")
-{
-    $AllProperties=0..$AllProperties.Count | foreach {if ($AllProperties[$_] -ne $null){$AllProperties[$_]}}
-    $AllProperties = $AllProperties | Select-Object -Unique
-}
-
+$AllProperties = $AllProperties | Select-Object -Unique
 if ($AllProperties -match "\*")
 {
     Write-Verbose "Property: $($FunctionConfig.Keys)"
@@ -244,8 +238,6 @@ if (Test-Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml"))
 $computers=@()
 $MainJobs = New-Object System.Collections.ArrayList
 $GetWmicompletedForComputers = New-Object System.Collections.ArrayList
-#$HashtableResult=@{}
-#$HashtableWMi=@{}
 $HashtableRunspace=@()
 $Global:ErrorResult=@()
 $UpdateFormatData=$true
@@ -300,7 +292,7 @@ $CountComputers=0
 
 [Array]$ExportFunctionsName="StartWmiJob","GetWmiJob","CreateResult"
     $PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
-    $PropertyReqRegistryFunctions="OsProductKey","SoftwareList"
+    #$PropertyReqRegistryFunctions="OsProductKey","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus"
     $WmiParamArray | foreach {
         if ($PropertyReqHddSmartFunctions -eq $_.property)
         {
@@ -310,7 +302,7 @@ $CountComputers=0
             }
 
         }
-        if ($PropertyReqRegistryFunctions -eq $_.property)
+        if ($_.class -eq "StdRegProv")
         {
             if (!($ExportFunctionsName -eq "RegGetValue"))
             {
@@ -324,7 +316,7 @@ Write-Verbose "$protocol protocol"
 if ($Protocol -eq "DCOM" -and $PSCmdlet.MyInvocation.InvocationName -ne $PSCmdlet.MyInvocation.line)
 {
     $ExportFunctionsName+="StartWmi"
-    $RunspaceImportVariables="WmiParamArray","Credential"    
+    #$RunspaceImportVariables="WmiParamArray","Credential","Protocol"    
     $SessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
         Get-Command -CommandType Function -Name $ExportFunctionsName | foreach {
             $SessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $_.name, $_.Definition         
@@ -344,6 +336,8 @@ if ($Protocol -eq "DCOM" -and $PSCmdlet.MyInvocation.InvocationName -ne $PSCmdle
     $SessionStateVariables=New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList "Credential", $Credential, "Credential"
     $SessionState.Variables.Add($SessionStateVariables) 
     $SessionStateVariables=New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList "VerbosePreference", $VerbosePreference, "VerbosePreference"
+    $SessionState.Variables.Add($SessionStateVariables)
+    $SessionStateVariables=New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList "Protocol", $Protocol, "Protocol"
     $SessionState.Variables.Add($SessionStateVariables)   
     
     $RunspacePool = [runspacefactory]::CreateRunspacePool(1,$ProcessFor,$SessionState,$Host)
@@ -359,7 +353,7 @@ else
     $ExportScriptFunction=@()
     $ExportScriptFunction=Get-ChildItem -Path function:\FunctInf*
     
-    [Array]$ExportVariablesName="WmiParamArray","MaxWmiJob","VerboseStatus"
+    [Array]$ExportVariablesName="WmiParamArray","MaxWmiJob","VerboseStatus","Protocol"
     $ExportVariables=@()
     $ExportVariablesName | foreach {$ExportVariables+=Get-Variable -Name $_}
   
@@ -500,11 +494,17 @@ elseif ($mainjobs.Count -ne 0)
         GetRunspaceJob | OutResult
     }
     while($MainJobs.Count -ne 0) 
-    Write-Verbose "RunspacePool dispose"
-    $RunspacePool.dispose()
+    [Scriptblock]$CloseRunspacePool=
+    {
+        param($RunspacePool)
+        $RunspacePool.Dispose()
+        $RunspacePool.Close()
+    }
     Write-Verbose "RunspacePool close"
-    $Callback = {(New-Object System.Threading.ManualResetEvent($false)).Set()}
-    [void]$RunspacePool.BeginClose($Callback,$Null)
+    $PowerShell = [powershell]::Create()
+    [void]$PowerShell.AddScript($CloseRunspacePool)
+    [void]$PowerShell.AddParameter("RunspacePool",$RunspacePool)
+    $State = $PowerShell.BeginInvoke() 
 }
 
 $Global:ErrorResult=$Global:ErrorResult | Sort-Object -Property Warning

@@ -1,88 +1,4 @@
-﻿<#
-.SYNOPSIS
-    Very fast displays system information on a local or remote computer.
-.DESCRIPTION
-    The function uses WMI to collect information related to the characteristics of the computer
-    The function uses multithreading. Multithreading is implemented through powershell runspace and WMI Job
-    The function allows you to quickly get the system information of a large number of computers on the network
-    After executing, two variables are created: 
-    $Result-contains successful queries, 
-    $ErrorResult-contains computers that have errors.
-.PARAMETER ProcessFor
-    This parameter determines the maximum number of computers for which WMI operations that can be executed simultaneously.
-    By default, the value of this parameter is 50.
-.PARAMETER JobTimeout
-    Specifies the amount of time that the function waits for a response from the wmi job or runspace job.
-    By default, the value of this parameter is 60 seconds.
-.PARAMETER Protocol
-    Defines the connection protocol to remote machine
-    By default DCOM protocol
-.PARAMETER AppendToResult
-    Adds the output to the $Result global variable. Without this parameter, $Result global variable replaces.
-.PARAMETER Credential
-    Specifies a user account that has permission to perform this action. The default is the current user. Type a user n
-    ame, such as "User01", "Domain01\User01", or User@domain01.com. Or, enter a PSCredential object, such as an object t
-    hat is returned by the Get-Credential cmdlet. When you type a user name, you are prompted for a password.
-.EXAMPLE
-    Get-SystemInfo
-    ComputerName     : Localhost
-    OsCaption        : Майкрософт Windows 10 Pro
-    OsArchitecture   : 64-разрядная
-    OsUpTime         : 10:1:17:41
-    OsLoggedInUser   : Domain\Username
-    CPUName          : Intel(R) Core(TM) i3-2105 CPU @ 3.10GHz
-    MotherboardModel : H61M-S1
-    DeviceModel      : To be filled by O.E.M.
-    MemoryTotal      : 4,0Gb
-    MemoryModules    :
-                       Capacity MemoryType Speed Manufacturer PartNumber
-                       -------- ---------- ----- ------------ ----------
-                       2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
-                       2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
-    HddDevices       :
-                       Size  InterfaceType Model                           SmartStatus
-                       ----  ------------- -----                           --------------
-                       112Gb IDE           KINGSTON SHFS37A120G ATA Device ОК
-                       149Gb IDE           ST3160813AS ATA Device          OK
-    VideoModel       : Intel(R) HD Graphics 3000
-    MonitorName      : E2042
-    CdRom            : TSSTcorp CDDVDW SH-222BB
-    This command get the system information on the local computer.
-.EXAMPLE
-    Get-SystemInfo -Computername comp1,comp2,comp3
-    This command receives system information from computers comp1, comp2, comp3. By default, the current account must be a member of the Administrators group on the
-    remote computer.
-.EXAMPLE
-    1..254 | foreach {"192.168.1.$_"} | Get-SystemInfo -Properties OsCaption,OSArchitecture,OsInstallDate -Credential Domain01\administrator01 | Out-GridView
-    Get OsCaption, OSArchitecture, OsInstallDate from the computers that are in the 192.168.1.0/24 network and sends them to a grid view window. This command uses 
-    the Credential parameter. The value of the Credential parameter is a user account name. The user is prompted for a password.
-.EXAMPLE
-    Get-ADComputer -Filter * | Get-SystemInfo -Cpu -Motherboard -Memory -Properties OsVersion,OsProductKey -ProcessFor 100 -JobTimeOut 30
-    Get CPU, Motherboard, Memory and OsVersion, OsProductKey information from all domain computers. The module activedirectory must be installed and loaded. 
-    This command uses -ProcessFor and JobTimeOut parameter.
-.EXAMPLE 
-    Get-ADComputer -Filter * | Get-SystemInfo -Protocol WSMAN
-    This command gets system information from all domain computers. Wsman protocol is used for connection
-    If errors occur, such as timeout expired  or other errors.
-    After some time, you can repeat the command for computers that have had errors.To do this, you need to use the variable $ErrorResult and -AppendToResult parameter to add the result to a variable $Result. 
-    PS C:\>$ErrorResult | Get-SystemInfo -Protocol WSMAN
-.EXAMPLE
-    Get-Content -Path C:\Computers.txt | Get-SystemInfo -Properties MemoryTotal,OsLoggedInUser -WarningAction SilentlyContinue | Where-Object {$_.memorytotal -lt 1.5gb}
-    This command gets computers that have a RAM size less than 1.5 gb. List of computers is taken from the file C:\Computers.txt. This command use parameter -WarningAction SilentlyContinue to ignore warning.
-    
-.EXAMPLE
-    Get-Content -Path C:\Computers.txt  | Get-SystemInfo -Properties OsLoggedInUser,HddSmart | Where-Object {$_.hddsmart.smartstatus -eq "Critical" -or $_.hddsmart.smartstatus -eq "Warning"}
-    This command gets computers that have hard disk problems
-.EXAMPLE
-    $Computers=Get-Content -Path C:\Computers.txt
-    Get-SystemInfo -Computername $Computers | ConvertTo-Html -Head "SystemInformation" | Out-File -FilePath C:\report.html
-    This command create html report
-.NOTES
-    Author: SAGSA
-    https://github.com/SAGSA/SystemInfo
-    Requires: Powershell 2.0
-#>
-function Get-SystemInfotest
+﻿function Get-SystemInfotest
 {
 [CmdletBinding()]
     param(
@@ -116,7 +32,7 @@ function Get-SystemInfotest
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HddDevCount","HDDSmart",
             "HddSmartStatus","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","MonitorManuf",
             "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","CPULoad","SoftwareList","RegistryValue","OsAdministrators","OsActivationStatus")] 
-            [array]$Properties
+            [string[]]$Properties
             
             )
 begin
@@ -162,8 +78,11 @@ $LoadScripts | foreach {
     }
 }
 
-#####################################################################################################
+
+
 $BeginFunction=get-date
+#####################################################################################################
+
 
 if ($PSBoundParameters['Credential'])
 {
@@ -177,8 +96,8 @@ Write-Verbose "Clear old Job"
 Get-Job | Where-Object {$_.state -ne "Running"} | Remove-Job -Force
 
 #Collection all Properties
-$AllPropertiesSwitch=@()
-$AllPropertiesSwitch+=$PSCmdlet.MyInvocation.BoundParameters.keys | foreach {
+#$AllPropertiesSwitch=@()
+[string[]]$AllPropertiesSwitch+=$PSCmdlet.MyInvocation.BoundParameters.keys | foreach {
     if ($PSCmdlet.MyInvocation.BoundParameters[$_].ispresent -and !($ExcludeParam -eq $_))
     {
         $SwitchConfig[$_]        
@@ -187,18 +106,12 @@ $AllPropertiesSwitch+=$PSCmdlet.MyInvocation.BoundParameters.keys | foreach {
 
 }
 
-if ($AllPropertiesSwitch[0] -eq $Null -and $Properties -eq $null)
+if ($AllPropertiesSwitch -eq $Null -and $Properties -eq $null)
 {
     $AllPropertiesSwitch=$DefaultInfoConfig   
 }
 $AllProperties+=$AllPropertiesSwitch+$Properties
-
-if ($AllProperties.GetType().name -ne "string")
-{
-    $AllProperties=0..$AllProperties.Count | foreach {if ($AllProperties[$_] -ne $null){$AllProperties[$_]}}
-    $AllProperties = $AllProperties | Select-Object -Unique
-}
-
+$AllProperties = $AllProperties | Select-Object -Unique
 if ($AllProperties -match "\*")
 {
     Write-Verbose "Property: $($FunctionConfig.Keys)"

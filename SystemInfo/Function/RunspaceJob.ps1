@@ -13,11 +13,11 @@ $WmiParamArray | Sort-Object -Property name -Unique | foreach {
         $Wmi=@{}
         if ($Credential -ne $null)
         {  
-            
-            if (!($WmiParam["Credential"]))
+            $Wmi.Add("Credential",$Credential)
+            <#if (!($WmiParam["Credential"]))
             {
-                $Wmi.Add("Credential",$Credential)
-            }          
+                
+            }#>          
         }
     }
     if ($WmiParam.Query)
@@ -88,43 +88,43 @@ if ($AllCompletedRunspaceJob)
 {
     Write-Verbose -Message "Available Completed Job"
     $AllCompletedRunspaceJob | foreach{
-    $Job=$_
-    Write-Verbose "$($_.location) End Invoke"
-    $TmpRes=$_.powershell.EndInvoke($_.State)
-    if($_.powershell.HadErrors -eq $true)
-    {
-        if ($TmpRes.count -eq 0)
+        $Job=$_
+        Write-Verbose "$($_.location) End Invoke"
+        $TmpRes=$_.powershell.EndInvoke($_.State)
+        if($_.powershell.HadErrors -eq $true)
         {
-            Write-Error "Scriptblock HadErrors, use try{}catch{} in the ScriptBlock to find out the details" -ErrorAction Stop
-        }
-        elseif ($TmpRes[0].GetType().name -eq "ErrorRecord")
-        {
-            Write-Error $TmpRes[0] -ErrorAction Stop
-        }
-        else
-        {
-            Write-Error "Unknown Error" -ErrorAction Stop
-        }
-    }
-    elseif($TmpRes[0] -ne $null)
-    {
-            if ($TmpRes[0].GetType().name -eq "ErrorRecord")
+            if ($TmpRes.count -eq 0)
+            {
+                Write-Error "Scriptblock HadErrors, use try{}catch{} in the ScriptBlock to find out the details" -ErrorAction Stop
+            }
+            elseif ($TmpRes[0].GetType().name -eq "ErrorRecord")
             {
                 Write-Error $TmpRes[0] -ErrorAction Stop
             }
-        Write-Verbose "$($Job.location) RunspaceJob Completed"
-        $TmpRes
-        Write-Verbose "$($_.location) Dispose completed job"
-        $_.powershell.dispose()
-        $_.State = $null
-        $_.powershell = $null
-        $MainJobs.Remove($Job)
+            else
+            {
+                Write-Error "Unknown Error $($TmpRes[0])" -ErrorAction Stop
+            }
+        }
+        elseif($TmpRes[0] -ne $null)
+        {
+                if ($TmpRes[0].GetType().name -eq "ErrorRecord")
+                {
+                    Write-Error $TmpRes[0] -ErrorAction Stop
+                }
+            Write-Verbose "$($Job.location) RunspaceJob Completed"
+            $TmpRes
+            Write-Verbose "$($_.location) Dispose completed job"
+            $_.powershell.dispose()
+            $_.State = $null
+            $_.powershell = $null
+            $MainJobs.Remove($Job)
                 
-    }
-    else
-    {
-        Write-Error "Scriptblock return empty value" -ErrorAction Stop
-    }
+        }
+        else
+        {
+            Write-Error "Scriptblock return empty value" -ErrorAction Stop
+        }
     }
 
 }
