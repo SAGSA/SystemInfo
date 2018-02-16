@@ -15,7 +15,9 @@ $Result-contains successful queries,
 
 $ErrorResult-contains computers that have errors.
 ## Module Installation
-If you use powershell v5 or later, run powershell command Install-Module -Name Systeminfo -Scope CurrentUser,
+If you use powershell v5 or later
+1. Run powershell command Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+2. Run powershell command Install-Module -Name Systeminfo -Scope CurrentUser
 else
 1. Find your PSModule paths by running $env:PSModulePath.Split(";") in a Powershell prompt
 2. Download the archive SysteminfoModule1.0.4.zip and extract to any one of these paths
