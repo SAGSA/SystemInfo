@@ -15,7 +15,7 @@ $Result-contains successful queries,
 
 $ErrorResult-contains computers that have errors.
 ## Module Installation
-If you use powershell v5 or later
+#If you use powershell v5 or later
 Run powershell command Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 Run powershell command Install-Module -Name Systeminfo -Scope CurrentUser
 else
