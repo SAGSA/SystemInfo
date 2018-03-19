@@ -60,14 +60,14 @@ $WmiParamArray | foreach {
             }
             elseif ($ActionProperty -eq "Function")
             {
-            Write-Verbose ("$ComputerName Add to result $Property=$($_.Action)")
-            $ResultParamProperty=&$Action
+                Write-Verbose ("$ComputerName Add to result $Property=$($_.Action)")
+                $ResultParamProperty=&$Action    
                 
             }
-             if (!$ResultParamProperty)
-                {
-                    $ResultParamProperty="NotSupported"
-                }
+            if ($ResultParamProperty -eq $null)
+            {
+                $ResultParamProperty="NotSupported"
+            }
             $Result | Add-Member -MemberType NoteProperty -Name $Property -Value $ResultParamProperty
         }
         

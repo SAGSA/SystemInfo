@@ -7,16 +7,22 @@ $FunctionConfig=@{
 
 #Os section
 
-OsVersion=          '-Class Win32_OperatingSystem -Property Version'
-OsCaption=          '-Class Win32_OperatingSystem -Property Caption'
-OSArchitecture=     '-Class Win32_OperatingSystem -Property OSArchitecture'
-OsInstallDate=      '-Class Win32_OperatingSystem -Script OS\OsInstallDate.ps1'
-OsUpTime=           '-Class Win32_OperatingSystem -Script OS\OsUptime.ps1 '
-OsProductKey=       '-Class StdRegProv            -Script OS\OsProductKey.ps1'
-OsLoggedInUser=     '-Class Win32_ComputerSystem  -Property UserName'
-OsAdministrators=   '-Class Win32_OperatingSystem -Script OS\OsAdministrators.ps1'
-OsActivationStatus= '-Query Select * From SoftwareLicensingProduct Where ApplicationID = "55c92734-d682-4d71-983e-d6ec3f16059f" And Licensestatus > 0 -Script OS\OsActivationStatus.ps1'
-AntivirusStatus=    '-Class Win32_OperatingSystem -Script OS\AntivirusStatus.ps1'
+OsVersion=           '-Class Win32_OperatingSystem -Property Version'
+OsCaption=           '-Class Win32_OperatingSystem -Property Caption'
+OSArchitecture=      '-Class Win32_OperatingSystem -Property OSArchitecture'
+OsInstallDate=       '-Class Win32_OperatingSystem -Script OS\OsInstallDate.ps1'
+OsUpTime=            '-Class Win32_OperatingSystem -Script OS\OsUptime.ps1 '
+OsProductKey=        '-Class StdRegProv            -Script OS\OsProductKey.ps1'
+OsLoggedInUser=      '-Class Win32_ComputerSystem  -Property UserName'
+OsAdministrators=    '-Class Win32_OperatingSystem -Script OS\OsAdministrators.ps1'
+OsActivationStatus=  '-Query Select * From SoftwareLicensingProduct Where ApplicationID = "55c92734-d682-4d71-983e-d6ec3f16059f" And Licensestatus > 0 -Script OS\OsActivationStatus.ps1'
+OsLastUpdateDaysAgo= '-Class Win32_QuickFixEngineering -Script OS\OsLastUpdated.ps1'
+OsTimeZone=          '-Class Win32_TimeZone -Property Caption'
+OsVolumeShadowCopy=  '-Class Win32_Volume,Win32_ShadowCopy -Script OS\VolumeShadowCopy.ps1'
+OsTenLatestHotfix=   '-Class Win32_QuickFixEngineering -Script OS\TenLatestUpdates.ps1'
+OsUpdateAgentVersion='-Class Win32_OperatingSystem -Script OS\UpdateAgentVersion.ps1'
+OSRebootRequired=    '-Class Win32_OperatingSystem,StdRegProv -Script OS\RebootRequired.ps1'
+AntivirusStatus=     '-Class Win32_OperatingSystem       -Script OS\AntivirusStatus.ps1'
 
 #Memory section
 
@@ -88,11 +94,12 @@ SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1'
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData -Script Storage\HddDevices.ps1'
 HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmart.ps1'
 HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmartStatus.ps1'
-
+HddPartitions=      '-Class Win32_DiskDrive -Script Storage\HddPartitions.ps1'
+HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script Storage\HddVolumes.ps1'
 #Vulnerabilities section
 
 MeltdownSpectreStatus='-Class Win32_OperatingSystem,StdRegProv,Win32_Processor,Win32_QuickFixEngineering   -Script Vulnerabilities\MeltdownSpectreStatus.ps1'
-EternalBlueStatus=    '-Class Win32_OperatingSystem,Win32_QuickFixEngineering,StdRegProv                   -Script Vulnerabilities\EternalBlueStatus.ps1'
+EternalBlueStatus=    '-Class Win32_OperatingSystem,StdRegProv                                             -Script Vulnerabilities\EternalBlueStatus.ps1'
 #End config
 }
 
@@ -108,9 +115,9 @@ StdRegProv='-Namespace ROOT\default'
 #Config Switch Param
 
 $SwitchConfig=@{
-OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsLoggedInUser","OsActivationStatus","OsAdministrators","AntivirusStatus"
+OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsActivationStatus","OsAdministrators","AntivirusStatus"
 Cpu="CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad"
-Hdd="HddDevices"
+Hdd="HddDevices","HddPartitions","HddVolumes"
 Motherboard="Motherboard","MotherboardModel","DeviceModel"
 Memory="MemoryTotal","MemoryFree","MemoryModules","MemoryMaxIns","MemorySlots","MemoryAvailable","MemoryModInsCount","ECCType"
 Video="VideoModel","VideoRam","VideoProcessor"
@@ -129,5 +136,5 @@ $ExcludeParam="Verbose","AppendToResult","Debug"
 #################################################################################################################################
 #Other param
 $LocalComputer=$env:COMPUTERNAME,"Localhost","127.0.0.1"
-$AdminRequired="HDDSmart","HddDevices","HddSmartStatus"
+$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy"
 $RequiredExecutionPolicy="Unrestricted","RemoteSigned"

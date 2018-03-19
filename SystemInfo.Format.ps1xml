@@ -81,7 +81,16 @@
               <TableRowEntry>
                 <TableColumnItems>
                   <TableColumnItem>
-                    <ScriptBlock>[string]('{0:N0}' -f ($_.Size/1gb))+"Gb"</ScriptBlock>
+                    <ScriptBlock>
+                    if ($_.Size -ge 1gb)
+                    {
+                        [string]('{0:N0}' -f ($_.Size/1gb))+"Gb"
+                    }
+                    else
+                    {
+                        [string]('{0:N0}' -f ($_.Size/1mb))+"Mb"
+                    }
+                    </ScriptBlock>
                   </TableColumnItem>
                    <TableColumnItem>
                     <ScriptBlock>$_.interfacetype</ScriptBlock>
@@ -97,6 +106,175 @@
             </TableRowEntries>
           </TableControl>
         </View>    
+         <View>
+            <Name>Default</Name>
+            <ViewSelectedBy>
+                <TypeName>ModuleSystemInfo.Systeminfo.Hdd.Partitions</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+            <TableHeaders>
+              <TableColumnHeader>
+                <Label>Type</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>Size</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>Disk</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>Partition</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>BooTable</Label>
+              <Alignment>left</Alignment>
+              </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>HddModel</Label>
+                <Alignment>left</Alignment>
+            </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+              <TableRowEntry>
+                <TableColumnItems>
+				  <TableColumnItem>
+                    <PropertyName>Type</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.Size -ge 1gb)
+                    {
+                        [string]('{0:N0}' -f ($_.Size/1gb))+"Gb"
+                    }
+                    else
+                    {
+                        [string]('{0:N0}' -f ($_.Size/1mb))+"Mb"
+                    }
+                    </ScriptBlock>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>Disk</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>Partition</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>BooTable</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>HddModel</PropertyName>
+                  </TableColumnItem>
+                </TableColumnItems>
+              </TableRowEntry>
+            </TableRowEntries>
+          </TableControl>
+        </View>       
+            <View>
+            <Name>Default</Name>
+            <ViewSelectedBy>
+                <TypeName>ModuleSystemInfo.Systeminfo.Hdd.Volumes</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+            <TableHeaders>
+              <TableColumnHeader>
+                <Label>Drive</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>Label</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>Size</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>FreeSpace</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>BootVolume</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>FS</Label>
+                <Alignment>left</Alignment>
+            </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>Disk</Label>
+                <Alignment>left</Alignment>
+            </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>Partition</Label>
+                <Alignment>left</Alignment>
+            </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>PageFilePresent</Label>
+                <Alignment>left</Alignment>
+            </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+              <TableRowEntry>
+                <TableColumnItems>
+                  <TableColumnItem>
+                    <PropertyName>Drive</PropertyName>
+                  </TableColumnItem>
+				  <TableColumnItem>
+                    <PropertyName>Label</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.Size -ge 1gb)
+                    {
+                        [string]('{0:N0}' -f ($_.Size/1gb))+"Gb"
+                    }
+                    else
+                    {
+                        [string]('{0:N0}' -f ($_.Size/1mb))+"Mb"
+                    }
+                    </ScriptBlock>
+                  </TableColumnItem>
+                 <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.FreeSpace -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.FreeSpace/1gb))+"Gb"
+                    }
+                    elseif ($_.FreeSpace -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.FreeSpace/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.FreeSpace/1mb))+"Mb"
+                    }
+                    </ScriptBlock>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>BootVolume</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>FS</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>Disk</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>Partition</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>PageFilePresent</PropertyName>
+                  </TableColumnItem>
+                </TableColumnItems>
+              </TableRowEntry>
+            </TableRowEntries>
+          </TableControl>
+        </View>       
+            
             <View>
             <Name>Default</Name>
             <ViewSelectedBy>

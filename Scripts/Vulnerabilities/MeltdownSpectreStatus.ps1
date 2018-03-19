@@ -40,53 +40,67 @@ else
     $kvaShadowRequired="Unsupported processor $manufacturer"
 }
 
+
+$AntivirusUpdatedKey=RegGetValue -key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\QualityCompat" -Value "cadca5fe-87d3-4b96-b7fb-a231484277cc" -GetValue GetDWORDValue -ErrorAction SilentlyContinue
+if ($AntivirusUpdatedKey -eq 0)
+{
+    $AntivirusUpdatedKeyIsPresent=$true
+}
+else
+{
+    $AntivirusUpdatedKeyIsPresent=$False
+}
+
+$FeatureSettingsOverride=RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Value "FeatureSettingsOverride" -GetValue GetDWORDValue -ErrorAction SilentlyContinue 
+$FeatureSettingsOverrideMask=RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Value "FeatureSettingsOverrideMask" -GetValue GetDWORDValue -ErrorAction SilentlyContinue   
+if ($FeatureSettingsOverride -eq 3)
+{
+    $HotfixEnabled=$False
+}
+elseif($FeatureSettingsOverride -eq 0)
+{
+    
+    $HotfixEnabled=$true
+}
+
+if ($Win32_OperatingSystem.ProductType -eq 1)
+{
+    if ($FeatureSettingsOverride -eq $null -and $FeatureSettingsOverrideMask -eq $null)
+    {
+        $HotfixEnabled=$true
+    }
+}
+else
+{
+    if ($FeatureSettingsOverride -eq $null -and $FeatureSettingsOverrideMask -eq $null)
+    {
+        $HotfixEnabled=$False
+    }
+}
+
 if ($Protocol -eq "Dcom")
 {
-
+Write-Warning "$Computername The information received with the help of Dcom protocol may be incorrect. Use the protocol Wsman to determine MeltdownSpectreStatus"
+    
     $HotfixArray=@(
     "KB4056892",
     "KB4056891",
     "KB4056890",
     "KB4056888",
     "KB4056893",
-    "KB4056894"
+    "KB4056894",
+    "KB4056897"
     )
 
     $Kb=$Win32_QuickFixEngineering | Where-Object {$HotfixArray -eq $_.HotFixID}
     if ($Kb)
     {
         $HotfixInstalled=$true  
-        $FeatureSettingsOverride=RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Value "FeatureSettingsOverride" -GetValue GetDWORDValue -ErrorAction SilentlyContinue 
-        $FeatureSettingsOverrideMask=RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Value "FeatureSettingsOverrideMask" -GetValue GetDWORDValue -ErrorAction SilentlyContinue   
-        if ($FeatureSettingsOverride -eq 3)
-        {
-            $HotfixEnabled=$False
-        }
-        elseif($FeatureSettingsOverride -eq 0)
-        {
-            $HotfixEnabled=$true
-        }
-
-        if ($Win32_OperatingSystem.ProductType -eq 1)
-        {
-            if ($FeatureSettingsOverride -eq $null -and $FeatureSettingsOverrideMask -eq $null)
-            {
-                $HotfixEnabled=$true
-            }
-        }
-        else
-        {
-            if ($FeatureSettingsOverride -eq $null -and $FeatureSettingsOverrideMask -eq $null)
-            {
-                $HotfixEnabled=$False
-            }
-        }
 
     }
     else
     {
         $HotfixInstalled=$False
-        $HotfixEnabled=$False
     }
 
 }
@@ -122,8 +136,9 @@ $NtQSIDefinition = @'
 }
 $PsObject=New-Object -TypeName Psobject
 $PsObject | Add-Member -MemberType NoteProperty -Name CpuIsVulnerable -Value $kvaShadowRequired
-$PsObject | Add-Member -MemberType NoteProperty -Name HotfixInstalled -Value $HotfixInstalled
-$PsObject | Add-Member -MemberType NoteProperty -Name HotfixEnabled -Value $HotfixEnabled
+$PsObject | Add-Member -MemberType NoteProperty -Name FixInstalled -Value $HotfixInstalled
+$PsObject | Add-Member -MemberType NoteProperty -Name FixEnabled -Value $HotfixEnabled
+$PsObject | Add-Member -MemberType NoteProperty -Name AntivUpKeyIsPresent -Value $AntivirusUpdatedKeyIsPresent
 if ($HotfixInstalled -and $HotfixEnabled)
 {
     $status="Patched"
@@ -145,5 +160,5 @@ $PsObject
 }
 catch
 {
-    $_
+   Write-Error $_
 }

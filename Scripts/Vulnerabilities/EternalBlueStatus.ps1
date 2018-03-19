@@ -1,72 +1,85 @@
 ﻿try
 {
-$HotfixInstalled=$false
-$Status="NotPatched"
-$hotFixIDs = @(
-        "KB3205409", 
-        "KB3210720", 
-        "KB3210721", 
-        "KB3212646", 
-        "KB3213986", 
-        "KB4012212", 
-        "KB4012213", 
-        "KB4012214", 
-        "KB4012215", 
-        "KB4012216", 
-        "KB4012217", 
-        "KB4012218", 
-        "KB4012220", 
-        "KB4012598", 
-        "KB4012606", 
-        "KB4013198", 
-        "KB4013389", 
-        "KB4013429",
-        "KB4015217", 
-        "KB4015438", 
-        "KB4015546", 
-        "KB4015547", 
-        "KB4015548", 
-        "KB4015549",
-        "KB4015550",
-        "KB4015551",
-        "KB4016635",
-        "KB4019215",
-        "KB4019216",
-        "KB4019217",
-        "KB4019264",
-        "KB4019472"
-    )
-if ([version]$Win32_OperatingSystem.Version -ge [Version]"10.0.14393") 
-{
-    $Status="NotRequired"   
-}
-$appliedHotFixID=$Win32_QuickFixEngineering | Where-Object {$hotFixIDs -eq $_.HotFixID}
-$smb1Protocol = RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Value "SMB1" -GetValue GetDWORDValue -ErrorAction SilentlyContinue 
-if ($smb1Protocol -eq 0) 
-{
-    $smb1ProtocolDisabled = $True
-} 
-else 
-{
-    $smb1ProtocolDisabled = $false
-}
-
-if ($appliedHotFixID)
-{
-    $HotfixInstalled=$true
-    $Status="Patched"
-}
-
-$PsObject=New-Object -TypeName psobject
-
-$PsObject | Add-Member -MemberType NoteProperty -Name HotfixInstalled -Value $HotfixInstalled
-$PsObject | Add-Member -MemberType NoteProperty -Name Smb1ProtocolDisabled -Value $smb1ProtocolDisabled
-$PsObject | Add-Member -MemberType NoteProperty -Name Status -Value $Status
-$PsObject
+#https://support.microsoft.com/en-us/help/4023262/how-to-verify-that-ms17-010-is-installed
+    
+    $OsVerFileVer=@{
+    #Windows XP
+    "5.1.2600"="5.1.2600.7208"
+    #Windows Server 2003 SP2
+    "5.2.3790"="5.2.3790.6021"
+    #Windows 7 Windows Server 2008 R2
+    "6.1.7601"="6.1.7601.23689"
+    #Windows 8 Windows Server 2012
+    "6.2.9200"="6.2.9200.22099"
+    #Windows 8.1 Windows Server 2012 R2
+    "6.3.9600"="6.3.9600.18604"
+    #Windows 10 TH1 v1507
+    "10.0.10240"="10.0.10240.17319"
+    #Windows 10 TH2 v1511
+    "10.0.10586"="10.0.10586.839"
+    #Windows 10 RS1 v1607 Windows Server 2016
+    "10.0.14393"="10.0.14393.953"
+    }
+    $Status="NotPatched"
+    $OsVersion=$Win32_OperatingSystem.version
+    $MinimumFileVersion=$OsVerFileVer[$OsVersion]
+    $SystemDir=$Win32_OperatingSystem.SystemDirectory
+    $File=$SystemDir+"\drivers\srv.sys"
+    $filewmi=$file -replace "\\","\\"
+    if ($Credential)
+    {
+        $SrvSysVer=(Get-WmiObject -Class CIM_DataFile -namespace "root\cimv2" -Filter "Name='$filewmi'" -ComputerName $Computername -Credential $Credential -ErrorAction Stop).version
+    }
+    else
+    {
+        $SrvSysVer=(Get-WmiObject -Class CIM_DataFile -namespace "root\cimv2" -Filter "Name='$filewmi'" -ComputerName $Computername -ErrorAction Stop).version
+    }
+    
+    if ($OsVersion -eq "5.1.2600")
+    {
+        if ($SrvSysVer -match ".+\s")
+        {
+            $SrvSysVer=$Matches[0]
+        }
+  
+    }
+    
+    if ([version]$OsVersion -ge [Version]"10.0.14393") 
+    {
+        $Status="NotRequired"   
+    }
+    else
+    {
+        if ($MinimumFileVersion -ne $null)
+        {
+            if ([version]$SrvSysVer -ge [version]$MinimumFileVersion)
+            {
+                $Status="Patched"
+            }
+        }
+        else
+        {
+            Write-Warning "$Computername Unknown OS version. Check OsVerFileVer hashtable"
+        }
+    }
+    
+    $smb1Protocol = RegGetValue -key "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Value "SMB1" -GetValue GetDWORDValue -ErrorAction SilentlyContinue 
+    
+    if ($smb1Protocol -eq 0) 
+    {
+        $smb1ProtocolDisabled = $True
+    } 
+    else 
+    {
+        $smb1ProtocolDisabled = $false
+    }   
+    $PsObject=New-Object -TypeName psobject
+    $PsObject | Add-Member -MemberType NoteProperty -Name SrvSysVersion -Value $SrvSysVer
+    $PsObject | Add-Member -MemberType NoteProperty -Name Smb1ProtocolDisabled -Value $smb1ProtocolDisabled
+    $PsObject | Add-Member -MemberType NoteProperty -Name Status -Value $Status
+    $PsObject
 }
 catch
 {
-    $_
+    Write-Error $_
 }
-
-

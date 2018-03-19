@@ -91,9 +91,10 @@ if ($AllCompletedRunspaceJob)
         $Job=$_
         Write-Verbose "$($_.location) End Invoke"
         $TmpRes=$_.powershell.EndInvoke($_.State)
-        if($_.powershell.HadErrors -eq $true)
+        if($_.PowerShell.Streams.Error[0] -ne $null)
         {
-            if ($TmpRes.count -eq 0)
+            write-error "$($_.PowerShell.Streams.Error[0])" -ErrorAction Stop
+            <#if ($TmpRes.count -eq 0)
             {
                 Write-Error "Scriptblock HadErrors, use try{}catch{} in the ScriptBlock to find out the details" -ErrorAction Stop
             }
@@ -104,14 +105,14 @@ if ($AllCompletedRunspaceJob)
             else
             {
                 Write-Error "Unknown Error $($TmpRes[0])" -ErrorAction Stop
-            }
+            }#>
         }
         elseif($TmpRes[0] -ne $null)
         {
-                if ($TmpRes[0].GetType().name -eq "ErrorRecord")
-                {
-                    Write-Error $TmpRes[0] -ErrorAction Stop
-                }
+            if ($TmpRes[0].GetType().name -eq "ErrorRecord")
+            {
+                Write-Error $TmpRes[0] -ErrorAction Stop
+            }
             Write-Verbose "$($Job.location) RunspaceJob Completed"
             $TmpRes
             Write-Verbose "$($_.location) Dispose completed job"
@@ -180,7 +181,7 @@ try
 }
 catch
 {
-    $_
+    write-error $_
 }
 
 }

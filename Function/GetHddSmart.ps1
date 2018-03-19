@@ -112,26 +112,31 @@ $PnpDev.Keys | foreach {
     $WarningThreshold=@{
     "Temperature"=46,54
     "Reallocated Sector Count"=1,10
+    "Reallocated Event Count"=1,10
+    "Offline Uncorrectable Sector Count (Uncorrectable Sector Count)"=1,10
     }
     $CriticalThreshold=@{
     "Temperature"=55
     "Reallocated Sector Count"=11
+    "Reallocated Event Count"=11
+    "Offline Uncorrectable Sector Count (Uncorrectable Sector Count)"=11
     }
         $HddWarning=$False
         $HddCritical=$False
         $HddSmart | Get-Member | foreach {
             $Property=$_.name
-            if ($WarningThreshold[$Property])
+            if (!$HddCritical)
             {
-                $MinWarningThreshold=$WarningThreshold[$Property][0]
-                $MaxWarningThreshold=$WarningThreshold[$Property][1]
-                    if ($HddSmart.$Property -le $MaxWarningThreshold -and $HddSmart.$Property -ge $MinWarningThreshold)
-                    {
-                        $HddWarning=$true
-                    }
+                if ($WarningThreshold[$Property])
+                {
+                    $MinWarningThreshold=$WarningThreshold[$Property][0]
+                    $MaxWarningThreshold=$WarningThreshold[$Property][1]
+                        if ($HddSmart.$Property -le $MaxWarningThreshold -and $HddSmart.$Property -ge $MinWarningThreshold)
+                        {
+                            $HddWarning=$true
+                        }
+                }
             }
-            
-
             if ($CriticalThreshold[$Property])
             {
                 $MinCriticalThreshold=$CriticalThreshold[$Property]
