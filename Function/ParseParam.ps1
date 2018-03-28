@@ -57,7 +57,8 @@ param(
 [String]$Property
 )
 
-$PermitParams="Class","ScriptBlock","UseRunspace","RunspaceImportVariable","Property","Query","Namespace","Script"
+$PermitParams="Class","ScriptBlock","UseRunspace","RunspaceImportVariable","Property","Query","Namespace","Script","FormatList"
+[array]$SwitchParam="FormatList"
 $ArrayHashTableParam=@()
 $ArrayParamString=(((($ParamString -replace "\s+"," ") -replace "\s+$","") -replace "^-"," -") -replace " -"," --") -split "\s-"
 $HashTableParam=@{}
@@ -79,8 +80,14 @@ $ArrayParamString | foreach {
     }
     elseif ($_ -match "-(.+\S)")
     {
-        $HashTableParam.Add($Matches[1],$null)        
-        
+        if ($SwitchParam -eq $Matches[1])
+        {
+            $HashTableParam.Add($Matches[1],$True)
+        }
+        else
+        {
+            $HashTableParam.Add($Matches[1],$null)  
+        }     
     }
 # End Foreach
 }
@@ -92,7 +99,6 @@ if ($CompareParam | where-object {$_.sideindicator -eq "=>"})
     Write-Error "$Property Parameter -$(($CompareParam | Where-Object {$_.SideIndicator -eq "=>"}).inputobject) not allowed. Check FunctionConfig" -ErrorAction Stop
 }
 $ObjectParam
-
 
 #End Function
 }

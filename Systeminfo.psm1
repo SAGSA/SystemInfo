@@ -72,7 +72,10 @@
     
 .EXAMPLE
     Get-Content -Path C:\Computers.txt  | Get-SystemInfo -Properties OsLoggedInUser,HddSmart | Where-Object {$_.hddsmart.smartstatus -eq "Critical" -or $_.hddsmart.smartstatus -eq "Warning"}
-    This command gets computers that have hard disk problems
+    This command gets computers that have hard disk problems. List of computers is taken from the file C:\Computers.txt
+.EXAMPLE
+    Get-ADComputer -Filter * | Get-SystemInfo -Properties OsUpTime -JobTimeOut 30 | Where-Object {$_.OsUpTime -gt $(New-TimeSpan -Days 1)}
+    This command gets computers which have uptime is more than 1 day. The module activedirectory must be installed and loaded
 .EXAMPLE
     $Computers=Get-Content -Path C:\Computers.txt
     Get-SystemInfo -Computername $Computers | ConvertTo-Html -Head "SystemInformation" | Out-File -FilePath C:\report.html
@@ -113,10 +116,10 @@ function Get-SystemInfo
             [ValidateRange(1,6000)]
             [int]$JobTimeOut=120,
             [switch]$AppendToResult,  
-            [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
+            [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
-            "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","CPULoad","SoftwareList","OsAdministrators","OsActivationStatus","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
+            "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
             [string[]]$Properties
             
             )
@@ -227,13 +230,6 @@ $Propertyparams.Keys | foreach {$PropertyParams[$_] | Where-Object {$_.script}} 
 
 #Create wmi param
 $WmiParamArray=CreateWmiObject -PropertyParams $PropertyParams -ManualNamespace $ManualNamespace
-    
-#Remove old ps1xml file
-if (Test-Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml"))
-{
-    Write-Verbose "Remove ps1xml file $($env:TEMP+"\SystemInfoAutoformat.ps1xml")"
-    Remove-Item -Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -Force
-}
 
 $computers=@()
 $MainJobs = New-Object System.Collections.ArrayList

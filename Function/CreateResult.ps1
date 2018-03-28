@@ -16,6 +16,12 @@ process
             
         if ($UpdateFormatData)
         {
+            #Remove old ps1xml file
+            if (Test-Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml"))
+            {
+                Write-Verbose "Remove old ps1xml file $($env:TEMP+"\SystemInfoAutoformat.ps1xml")"
+                Remove-Item -Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -Force
+            }
             CreateFormatPs1xml -ForObject  $Result -ErrorAction Stop
             Update-FormatData -PrependPath $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -ErrorAction SilentlyContinue
             Set-Variable -Name UpdateFormatData -Value $false -Scope 1 -Force

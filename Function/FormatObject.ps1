@@ -28,7 +28,7 @@ $AllProperties | foreach{
     elseif($ForObject.RunspaceId)
     {
     }
-    elseif($ForObject.HddSmart)
+    elseif($PropertyParams[$Property].FormatList)
     {
         $XmlFormatList+="
         <ListItem>

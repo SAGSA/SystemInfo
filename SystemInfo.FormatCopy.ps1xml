@@ -274,6 +274,44 @@
             </TableRowEntries>
           </TableControl>
         </View>       
+            
+            <View>
+            <Name>Default</Name>
+            <ViewSelectedBy>
+                <TypeName>ModuleSystemInfo.Systeminfo.networkadapder.adapter</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+            <TableHeaders>
+              <TableColumnHeader>
+                <Label>Name</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>AdapterType</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>PhysicalAdapter</Label>
+                <Alignment>left</Alignment>
+            </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+              <TableRowEntry>
+                <TableColumnItems>
+                  <TableColumnItem>
+                    <PropertyName>Name</PropertyName>
+                  </TableColumnItem>
+                   <TableColumnItem>
+                    <PropertyName>AdapterType</PropertyName>
+                  </TableColumnItem>
+                <TableColumnItem>
+                    <PropertyName>PhysicalAdapter</PropertyName>
+                </TableColumnItem>
+                </TableColumnItems>
+              </TableRowEntry>
+            </TableRowEntries>
+          </TableControl>
+        </View>   
             <View>
             <Name>Default</Name>
             <ViewSelectedBy>

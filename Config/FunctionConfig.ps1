@@ -66,8 +66,9 @@ MonitorYear=        '-Class wmiMonitorID -Property YearOfManufacture'
 
 #Network section
 
-NetworkAdapters=    '-Class Win32_NetworkAdapterConfiguration -Script Network\NetworkAdapters.ps1'
-NetPhysAdapCount=   '-Class Win32_NetworkAdapter              -Script Network\NetPhysAdapCount.ps1'
+NetworkAdapters=    '-Class Win32_NetworkAdapterConfiguration,Win32_NetworkAdapter,MSNdis_LinkSpeed,StdRegProv -Script Network\NetworkAdapters.ps1 -FormatList'
+NetworkAdaptersPowMan='-Class Win32_NetworkAdapter,StdRegProv,MSPower_DeviceEnable,MSPower_DeviceWakeEnable,MSNdis_DeviceWakeOnMagicPacketOnly -Script Network\NetworkAdaptersPowMan.ps1 -FormatList'
+NetPhysAdapCount=   '-Class Win32_NetworkAdapter -Script Network\NetPhysAdapCount.ps1'
 
 #Printer section
 
@@ -87,15 +88,16 @@ UsbDevices=         '-Class Win32_USBControllerDevice -Script UsbDevice\UsbDevic
 
 #Software section
 
-SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1'
+SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -FormatList'
 
 #Hdd section
 
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData -Script Storage\HddDevices.ps1'
-HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmart.ps1'
+HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmart.ps1 -FormatList'
 HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmartStatus.ps1'
 HddPartitions=      '-Class Win32_DiskDrive -Script Storage\HddPartitions.ps1'
 HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script Storage\HddVolumes.ps1'
+
 #Vulnerabilities section
 
 MeltdownSpectreStatus='-Class Win32_OperatingSystem,StdRegProv,Win32_Processor,Win32_QuickFixEngineering   -Script Vulnerabilities\MeltdownSpectreStatus.ps1'
@@ -108,6 +110,10 @@ wmiMonitorID='-Namespace Root\wmi'
 MSStorageDriver_FailurePredictStatus='-Namespace Root\wmi'
 MSStorageDriver_FailurePredictData='-Namespace Root\wmi'
 StdRegProv='-Namespace ROOT\default'
+MSNdis_LinkSpeed='-Namespace Root\wmi'
+MSPower_DeviceEnable='-Namespace Root\wmi'
+MSPower_DeviceWakeEnable='-Namespace Root\wmi'
+MSNdis_DeviceWakeOnMagicPacketOnly='-Namespace Root\wmi'
 }
 
 #End FunctionConfig
@@ -122,7 +128,7 @@ Motherboard="Motherboard","MotherboardModel","DeviceModel"
 Memory="MemoryTotal","MemoryFree","MemoryModules","MemoryMaxIns","MemorySlots","MemoryAvailable","MemoryModInsCount","ECCType"
 Video="VideoModel","VideoRam","VideoProcessor"
 Monitor="MonitorManuf","MonitorName","MonitorPCode","MonitorSN","MonitorYear"
-NetworkAdapter="NetworkAdapters","NetPhysAdapCount"
+NetworkAdapter="NetworkAdapters","NetworkAdaptersPowMan"
 PrinterInfo="Printers","UsbConPrCount","IsPrintServer","UsbConPrOnline"
 UsbDevices="UsbDevices"
 SoftwareList="SoftwareList"
@@ -136,5 +142,5 @@ $ExcludeParam="Verbose","AppendToResult","Debug"
 #################################################################################################################################
 #Other param
 $LocalComputer=$env:COMPUTERNAME,"Localhost","127.0.0.1"
-$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy"
+$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy","NetworkAdaptersPowMan"
 $RequiredExecutionPolicy="Unrestricted","RemoteSigned"

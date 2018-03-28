@@ -1,1 +1,0 @@
-$Win32_USBControllerDevice | foreach {[wmi]($_.dependent)} | Select-Object -Property Name

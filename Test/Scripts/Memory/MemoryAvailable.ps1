@@ -1,1 +1,0 @@
-$Win32_OperatingSystem.TotalVisibleMemorySize * 1kb
