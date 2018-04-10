@@ -1,5 +1,11 @@
 ﻿try
 {
+    $DrTypehash = @{
+        2 = "Removable"
+        3="Fixed"
+        4="Network"
+        5 = "Compact"
+    }
     $ASSOCIATORSTable=@{}
     $Win32_LogicalDiskToPartition | foreach{
         if ($_.Dependent -match '.+=\"(.+:)\"')
@@ -27,6 +33,11 @@
             }
         }
         
+        $DriveType=$DrTypehash[[int]$($Volume.DriveType)]
+        if ($DriveType -eq $null)
+        {
+            $DriveType=$Volume.DriveType
+        }
         $Psobject=New-Object -TypeName psobject      
         $Psobject | Add-Member -MemberType NoteProperty -Name Drive -Value  $Volume.DriveLetter
         $Psobject | Add-Member -MemberType NoteProperty -Name Label -Value $Volume.label
@@ -39,6 +50,7 @@
         $Psobject | Add-Member -MemberType NoteProperty -Name Disk -Value $Disk
         $Psobject | Add-Member -MemberType NoteProperty -Name Partition -Value $Partition
         $Psobject | Add-Member -MemberType NoteProperty -Name Compressed -Value $Volume.Compressed
+        $Psobject | Add-Member -MemberType NoteProperty -Name DriveType -Value $DriveType
         $Psobject.psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.Hdd.Volumes")
         $Psobject
     

@@ -14,7 +14,7 @@ OsInstallDate=       '-Class Win32_OperatingSystem -Script OS\OsInstallDate.ps1'
 OsUpTime=            '-Class Win32_OperatingSystem -Script OS\OsUptime.ps1 '
 OsProductKey=        '-Class StdRegProv            -Script OS\OsProductKey.ps1'
 OsLoggedInUser=      '-Class Win32_ComputerSystem  -Property UserName'
-OsAdministrators=    '-Class Win32_OperatingSystem -Script OS\OsAdministrators.ps1'
+OsAdministrators=    '-Query SELECT * FROM Win32_Group WHERE SID="S-1-5-32-544" -Script OS\OsAdministrators.ps1'
 OsActivationStatus=  '-Query Select * From SoftwareLicensingProduct Where ApplicationID = "55c92734-d682-4d71-983e-d6ec3f16059f" And Licensestatus > 0 -Script OS\OsActivationStatus.ps1'
 OsLastUpdateDaysAgo= '-Class Win32_QuickFixEngineering -Script OS\OsLastUpdated.ps1'
 OsTimeZone=          '-Class Win32_TimeZone -Property Caption'
@@ -24,6 +24,8 @@ OsUpdateAgentVersion='-Class Win32_OperatingSystem -Script OS\UpdateAgentVersion
 OSRebootRequired=    '-Class Win32_OperatingSystem,StdRegProv -Script OS\RebootRequired.ps1'
 AntivirusStatus=     '-Class Win32_OperatingSystem       -Script OS\AntivirusStatus.ps1'
 
+#Powershell section
+PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 #Memory section
 
 MemoryTotal=        '-Class Win32_PhysicalMemory      -Script Memory\MemoryTotal.ps1'
@@ -136,7 +138,7 @@ CheckVulnerabilities="OsCaption","OsLoggedInUser","MeltdownSpectreStatus","Etern
 }
 
 #Exclude switch Param
-$ExcludeParam="Verbose","AppendToResult","Debug"
+$ExcludeParam="Verbose","AppendToResult","Debug","ShowComputerName"
 #End Config Switch Param
 
 #################################################################################################################################

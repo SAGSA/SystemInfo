@@ -77,6 +77,9 @@
     Get-ADComputer -Filter * | Get-SystemInfo -Properties OsUpTime -JobTimeOut 30 | Where-Object {$_.OsUpTime -gt $(New-TimeSpan -Days 1)}
     This command gets computers which have uptime is more than 1 day. The module activedirectory must be installed and loaded
 .EXAMPLE
+    Get-ADComputer -filter * | Get-SystemInfo -SoftwareList -JobTimeOut 240 -ShowComputerName | foreach {$_.SoftwareList} | Where-Object {$_.name -match "Google Chrome"} | ft -AutoSize
+    This command gets computers with google chrome browser installed. The module activedirectory must be installed and loaded
+.EXAMPLE
     $Computers=Get-Content -Path C:\Computers.txt
     Get-SystemInfo -Computername $Computers | ConvertTo-Html -Head "SystemInformation" | Out-File -FilePath C:\report.html
     This command create html report
@@ -105,18 +108,20 @@ function Get-SystemInfo
             [switch]$UsbDevices,
             [switch]$SoftwareList,
             [switch]$CheckVulnerabilities,
+            [switch]$ShowComputerName,
             $Credential,
             [ValidateSet("Dcom","Wsman")]
             $Protocol="Dcom",
             [Alias("ThrottleLimit")]
-            $ProcessFor=50,
-            [ValidateRange(1,1000)]
+            [ValidateRange(1,500)]
+            [int]$ProcessFor=50,
+            [ValidateRange(1,500)]
             [int]$MaxWmiJob=20,
             [Alias("Timeout")]
             [ValidateRange(1,6000)]
             [int]$JobTimeOut=120,
             [switch]$AppendToResult,  
-            [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
+            [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
             "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 

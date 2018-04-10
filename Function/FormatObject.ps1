@@ -34,7 +34,7 @@ $AllProperties | foreach{
         <ListItem>
         <Label>$Property</Label>
             <ScriptBlock> 
-                $DollarUnder.$Property | fl | out-string
+                $DollarUnder.$Property | Format-List | Out-String
             </ScriptBlock>
         </ListItem>"
     }
@@ -44,7 +44,7 @@ $AllProperties | foreach{
         <ListItem>
         <Label>$Property</Label>
             <ScriptBlock> 
-                $DollarUnder.$Property | ft -autosize | out-string
+                $DollarUnder.$Property | Format-Table -autosize | Out-String
             </ScriptBlock>
         </ListItem>"
     }

@@ -13,7 +13,14 @@ process
         
         $Result.PSObject.Properties.Remove('RunspaceId') 
         $Result.PSObject.Properties.Remove('PsComputerName')
-            
+        $Result | Get-Member | Where-Object {$_.definition -match "Object" -or $_.definition -match "^ModuleSystemInfo"} | foreach {
+            $PropertyName=$_.name
+            $CompName=$Result.computername
+            $Result.$PropertyName | foreach {
+                $_ | Add-Member -MemberType NoteProperty -Name PsComputerName -Value $CompName
+                $_ | Add-Member -MemberType NoteProperty -Name PSShowComputerName -Value $ShowComputerName.IsPresent
+            }
+        }    
         if ($UpdateFormatData)
         {
             #Remove old ps1xml file
