@@ -7,7 +7,12 @@ $ForObject
 $ConvertToGb="MemoryTotal","MemoryMaxIns","MemoryFree","MemoryAvailable","VideoRam"
 $FormatTableFor="PSCustomObject","ManagementObject"
 [string]$XmlFormatList=''
+#ScriptBlock Variable
 $DollarUnder='$_'
+$ScriptBlockTypeObject='$ScriptBlockTypeObject'
+$SelectObjects='[Array]$SelectObjects'
+$SelectObject='$SelectObject'
+$SBfalse='$false'
 $AllProperties | foreach{
     $Property=$_
     if ($Forobject.$Property.count -gt 1)
@@ -44,7 +49,13 @@ $AllProperties | foreach{
         <ListItem>
         <Label>$Property</Label>
             <ScriptBlock> 
-                $DollarUnder.$Property | Format-Table -autosize | Out-String
+                $ScriptBlockTypeObject=$DollarUnder.$Property[0].psobject.typenames[0]
+                $SelectObjects+=$DollarUnder.$Property | Select-object -property * -ExcludeProperty PsComputername,PSShowComputerName
+                foreach ($SelectObject in $SelectObjects)
+                {
+                    $SelectObject.psobject.typenames.insert(0,$ScriptBlockTypeObject)
+                }
+            $SelectObjects | ft -AutoSize | Out-String
             </ScriptBlock>
         </ListItem>"
     }

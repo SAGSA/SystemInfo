@@ -138,7 +138,7 @@ CheckVulnerabilities="OsCaption","OsLoggedInUser","MeltdownSpectreStatus","Etern
 }
 
 #Exclude switch Param
-$ExcludeParam="Verbose","AppendToResult","Debug","ShowComputerName"
+$ExcludeParam="Verbose","AppendToResult","Debug"
 #End Config Switch Param
 
 #################################################################################################################################

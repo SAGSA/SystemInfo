@@ -18,7 +18,7 @@ process
             $CompName=$Result.computername
             $Result.$PropertyName | foreach {
                 $_ | Add-Member -MemberType NoteProperty -Name PsComputerName -Value $CompName
-                $_ | Add-Member -MemberType NoteProperty -Name PSShowComputerName -Value $ShowComputerName.IsPresent
+                $_ | Add-Member -MemberType NoteProperty -Name PSShowComputerName -Value $true
             }
         }    
         if ($UpdateFormatData)

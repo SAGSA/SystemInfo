@@ -77,7 +77,7 @@
     Get-ADComputer -Filter * | Get-SystemInfo -Properties OsUpTime -JobTimeOut 30 | Where-Object {$_.OsUpTime -gt $(New-TimeSpan -Days 1)}
     This command gets computers which have uptime is more than 1 day. The module activedirectory must be installed and loaded
 .EXAMPLE
-    Get-ADComputer -filter * | Get-SystemInfo -SoftwareList -JobTimeOut 240 -ShowComputerName | foreach {$_.SoftwareList} | Where-Object {$_.name -match "Google Chrome"} | ft -AutoSize
+    Get-ADComputer -filter * | Get-SystemInfo -SoftwareList -JobTimeOut 240 | foreach {$_.SoftwareList} | Where-Object {$_.name -match "Google Chrome"} | Out-GridView
     This command gets computers with google chrome browser installed. The module activedirectory must be installed and loaded
 .EXAMPLE
     $Computers=Get-Content -Path C:\Computers.txt
@@ -108,7 +108,6 @@ function Get-SystemInfo
             [switch]$UsbDevices,
             [switch]$SoftwareList,
             [switch]$CheckVulnerabilities,
-            [switch]$ShowComputerName,
             $Credential,
             [ValidateSet("Dcom","Wsman")]
             $Protocol="Dcom",
