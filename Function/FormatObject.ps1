@@ -13,6 +13,7 @@ $ScriptBlockTypeObject='$ScriptBlockTypeObject'
 $SelectObjects='[Array]$SelectObjects'
 $SelectObject='$SelectObject'
 $SBfalse='$false'
+$SbNull='$Null'
 $AllProperties | foreach{
     $Property=$_
     if ($Forobject.$Property.count -gt 1)
@@ -49,7 +50,15 @@ $AllProperties | foreach{
         <ListItem>
         <Label>$Property</Label>
             <ScriptBlock> 
-                $ScriptBlockTypeObject=$DollarUnder.$Property[0].psobject.typenames[0]
+                if ($DollarUnder.$Property.count -eq $SbNull)
+                {
+                    $ScriptBlockTypeObject=$DollarUnder.$Property.psobject.typenames[0]   
+                }
+                else
+                {
+                    $ScriptBlockTypeObject=$DollarUnder.$Property[0].psobject.typenames[0]
+                }
+                
                 $SelectObjects+=$DollarUnder.$Property | Select-object -property * -ExcludeProperty PsComputername,PSShowComputerName
                 foreach ($SelectObject in $SelectObjects)
                 {
