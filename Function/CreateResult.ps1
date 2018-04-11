@@ -13,7 +13,7 @@ process
         
         $Result.PSObject.Properties.Remove('RunspaceId') 
         $Result.PSObject.Properties.Remove('PsComputerName')
-        $Result | Get-Member | Where-Object {$_.definition -match "Object" -or $_.definition -match "^ModuleSystemInfo"} | foreach {
+        $Result | Get-Member | Where-Object {$_.definition -match "Object" -or $_.definition -match "ModuleSystemInfo"} | foreach {
             $PropertyName=$_.name
             $CompName=$Result.computername
             $Result.$PropertyName | foreach {
