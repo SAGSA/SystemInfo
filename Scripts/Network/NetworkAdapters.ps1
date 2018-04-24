@@ -69,7 +69,9 @@ $Win32_NetworkAdapter | foreach {
         if ($AdapterTypeValue -ne $null)
         {
             $AdapterType=GetAdapterTypeFromValue -SV $([int]$AdapterTypeValue)
-        }        
+        } 
+	$DriverVersion=RegGetValue -key $Key -Value DriverVersion -GetValue GetStringValue -ErrorAction SilentlyContinue
+    
     }
     
     $Status=GetStatusFromValue -Sv $Adapter.NetConnectionStatus
@@ -83,6 +85,7 @@ $Win32_NetworkAdapter | foreach {
     $TmpObject | Add-Member -MemberType NoteProperty -Name MediaType -Value $AdapterType
     $TmpObject | Add-Member -MemberType NoteProperty -Name Status -Value $Status
     $TmpObject | Add-Member -MemberType NoteProperty -Name MACAddress -Value $Adapter.MACAddress
+	$TmpObject | Add-Member -MemberType NoteProperty -Name DriverVersion -Value $([version]$DriverVersion)
     $TmpObject | Add-Member -MemberType NoteProperty -Name SpeedDuplex -Value $SpeedDuplex
     $TmpObject | Add-Member -MemberType NoteProperty -Name SpeedMbps -Value $LinkSpeed
     $AdaptersHashTable.Add("$($Adapter.deviceid)",$TmpObject) 

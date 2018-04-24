@@ -22,8 +22,10 @@ OsVolumeShadowCopy=  '-Class Win32_Volume,Win32_ShadowCopy -Script OS\VolumeShad
 OsTenLatestHotfix=   '-Class Win32_QuickFixEngineering -Script OS\TenLatestUpdates.ps1'
 OsUpdateAgentVersion='-Class Win32_OperatingSystem -Script OS\UpdateAgentVersion.ps1'
 OSRebootRequired=    '-Class Win32_OperatingSystem,StdRegProv -Script OS\RebootRequired.ps1'
+OsProfileList=       '-Class Win32_UserProfile -Script OS\UserProfileList.ps1'
+OsSRPSettings=       '-Class Win32_UserProfile,StdRegprov -Script OS\OsSRPSettings.ps1'
 AntivirusStatus=     '-Class Win32_OperatingSystem       -Script OS\AntivirusStatus.ps1'
-
+UserProxySettings=   '-Class Win32_UserProfile,StdRegprov -Script OS\UserProxySettings.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 #Memory section

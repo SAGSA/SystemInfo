@@ -4,6 +4,7 @@ param(
 $ComputerName,
 $ScriptBlock,
 $ArgumentList,
+$PSSessionOption,
 $Credential
 )
 try
@@ -17,7 +18,11 @@ try
     }
     if ($Credential)
     {
-      $InvokeParam.Add("Credential",$Credential)     
+        $InvokeParam.Add("Credential",$Credential)     
+    }
+    if ($PSBoundParameters["PSSessionOption"])
+    {
+        $InvokeParam.Add("SessionOption",$PSSessionOption)   
     }
     $TmpPsJob=Invoke-Command @InvokeParam -AsJob -ErrorAction Stop
     $temp = '' | Select-Object PSJobTypeName,PsJob,StartTime,Location

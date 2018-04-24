@@ -94,7 +94,7 @@ function Get-SystemInfo
     param(
             [parameter(ValueFromPipeline=$true,
             ValueFromPipelineByPropertyName=$true,Position=0)]
-            [Alias('CN','Computername','DnsHostname')]
+            [Alias('CN','Computername','DnsHostname','PsComputerName')]
             [string[]]$Name=$Env:COMPUTERNAME,          
             [switch]$OsInfo,
             [switch]$Cpu,
@@ -108,6 +108,7 @@ function Get-SystemInfo
             [switch]$UsbDevices,
             [switch]$SoftwareList,
             [switch]$CheckVulnerabilities,
+            [System.Management.Automation.Remoting.PSSessionOption]$PSSessionOption,
             $Credential,
             [ValidateSet("Dcom","Wsman")]
             $Protocol="Dcom",
@@ -119,8 +120,10 @@ function Get-SystemInfo
             [Alias("Timeout")]
             [ValidateRange(1,6000)]
             [int]$JobTimeOut=120,
-            [switch]$AppendToResult,  
-            [ValidateSet("*","OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
+            [switch]$AppendToResult,
+            [ValidateSet("*",
+            "OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus",
+            "OsProfileList","OsSRPSettings","UserProxySettings","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
             "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
@@ -179,6 +182,12 @@ if ($PSCmdlet.MyInvocation.BoundParameters['Credential'])
     {
         $Credential=Get-Credential $Credential
     }    
+}
+if (!($PSCmdlet.MyInvocation.BoundParameters['PSSessionOption']) -and $Protocol -eq "Wsman")
+{
+  #Default PSSessionOption
+  Write-Verbose "New-PSSessionOption -NoMachineProfile"
+  $PSSessionOption=New-PSSessionOption -NoMachineProfile  
 }
 #Clear Old Job
 Write-Verbose "Clear old Job"
@@ -420,7 +429,7 @@ $computers| foreach {
         
         }
         
-        $NewJob=StartPsJob -ComputerName $ComputerName -ScriptBlock $InvokeScriptBlock -ArgumentList $HashtableParam,$ComputerName -Credential $Credential
+        $NewJob=StartPsJob -ComputerName $ComputerName -ScriptBlock $InvokeScriptBlock -ArgumentList $HashtableParam,$ComputerName -Credential $Credential -PSSessionOption $PSSessionOption
         if ($NewJob)
         {
             [void]$MainJobs.Add($NewJob)
