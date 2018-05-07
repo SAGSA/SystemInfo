@@ -58,9 +58,10 @@ $RunspaceErrorCodes=@{}
     
     if ($Err.Exception.Message -eq "Timeout expired")
     {
-        Write-Verbose "$($ExceptionJob.location) begin stop timeout job"
-        $Callback = {(New-Object System.Threading.ManualResetEvent($false)).Set()}
-        [void]$ExceptionJob.powershell.BeginStop($callback,$null)
+        # Закоментировал так как иногда из за этого powershell закрывается с ошибкой
+        #Write-Verbose "$($ExceptionJob.location) begin stop timeout job"
+        #$Callback = {(New-Object System.Threading.ManualResetEvent($false)).Set()}
+        #[void]$ExceptionJob.powershell.BeginStop($callback,$null)
     }
     else
     {

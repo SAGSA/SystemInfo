@@ -542,9 +542,11 @@ if ($ExecutionPolicyChanged)
 }
 #Write-Verbose "Clear all failed wmi job"
 #Get-Job | Where-Object {$_.State -eq "Failed"} | Remove-Job -Force
+$RunnningTime=(New-TimeSpan -Start $BeginFunction).TotalSeconds
 if ($CountComputers -gt 1)
 {
-    Write-Verbose  "Function running  $((New-TimeSpan -Start $BeginFunction).TotalSeconds) seconds" -Verbose
+    Write-Verbose  "Function running  $RunnningTime seconds" -Verbose
+    Write-Verbose  "Speed $([math]::Round($($RunnningTime/$CountComputers),2)) cps" -Verbose
     Write-Verbose  "Total Computers   $CountComputers" -Verbose
     Write-Verbose  "Success           $ResultCount" -Verbose
     Write-Verbose  "Errors            $ErrResCount" -Verbose
