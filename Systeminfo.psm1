@@ -546,7 +546,7 @@ $RunnningTime=(New-TimeSpan -Start $BeginFunction).TotalSeconds
 if ($CountComputers -gt 1)
 {
     Write-Verbose  "Function running  $RunnningTime seconds" -Verbose
-    Write-Verbose  "Speed $([math]::Round($($RunnningTime/$CountComputers),2)) cps" -Verbose
+    Write-Verbose  "Speed $([math]::Round($($CountComputers/$RunnningTime),2)) cps" -Verbose
     Write-Verbose  "Total Computers   $CountComputers" -Verbose
     Write-Verbose  "Success           $ResultCount" -Verbose
     Write-Verbose  "Errors            $ErrResCount" -Verbose
