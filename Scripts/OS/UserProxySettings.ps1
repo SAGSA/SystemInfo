@@ -10,7 +10,7 @@ try
     11=$true
     9=$true
     }
-    $LoadedProfile=$Win32_UserProfile |Select-Object -Property * | Where-Object {!($ExcludeSid -eq $_.sid) -and $_.loaded} 
+    $LoadedProfile=$Win32_UserProfile | Select-Object -Property * | Where-Object {!($ExcludeSid -eq $_.sid) -and $_.loaded} 
     if ($LoadedProfile -eq $null)
     {
         Write-Error "No uploaded user profile" -ErrorAction Stop        

@@ -1,5 +1,6 @@
 function GetHddSmart
 {
+param ($OsVersion)
 	function ConvertTo-Hex ( $DEC ) {
 		'{0:x2}' -f [int]$DEC
 	}
@@ -59,11 +60,11 @@ function GetHddSmart
 	}
 
 $PnpDev=@{}
-$hdddev=$Win32_DiskDrive | Select-Object Model,Size,MediaType,InterfaceType,FirmwareRevision,SerialNumber,PNPDeviceID
+$hdddev=$Win32_DiskDrive | Select-Object Model,Size,MediaType,InterfaceType,FirmwareRevision,SerialNumber,PNPDeviceID,Index
 $hdddev | foreach {
     $PnpDev.Add($($_.pnpdeviceid -replace "\\","\\"),$_)
 }
-
+$AllHddSmart=@()
 $PnpDev.Keys | foreach {
     $PnpDevid=$_
     $TmpFailData=$MSStorageDriver_FailurePredictData | Where-Object  {$_.InstanceName -Match $PnpDevid}
@@ -74,7 +75,7 @@ $PnpDev.Keys | foreach {
     }
     else
     {
-        $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name  PredictFailure -Value 'Not supported'
+        $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name  PredictFailure -Value 'Unknown'
     }
     if ($TmpFailData)
     {
@@ -97,7 +98,7 @@ $PnpDev.Keys | foreach {
 				        if (( $i - 3 ) % 12 -eq 6 ) 
                         {
 					        if ( $Attribute -eq '09' ) { [int]$Value = $Value / 24 }
-				            $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name $( Get-AttributeDescription $Attribute) -Value $Value
+				            $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name $(Get-AttributeDescription $Attribute) -Value $Value
                         }
 			        }
 			        $pByte = $Byte
@@ -106,7 +107,7 @@ $PnpDev.Keys | foreach {
     }
     else
     {
-        $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Not supported' 
+        $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Unknown' 
     }
     $HddSmart=$PnpDev[$PnpDevid]
     $WarningThreshold=@{
@@ -149,7 +150,7 @@ $PnpDev.Keys | foreach {
             
         #End Foreach
         }
-    if ($HddSmart.smartstatus -ne "Not supported")
+    if ($HddSmart.smartstatus -ne "Unknown")
     {
         if ($HddWarning)
         {
@@ -164,7 +165,80 @@ $PnpDev.Keys | foreach {
             $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Ok'   
         }
     }
-$HddSmart
+$AllHddSmart+=$HddSmart
 #End Foreach
 }
+
+if ([version]$OsVersion -ge [version]"6.2")
+{
+    #https://msdn.microsoft.com/en-us/library/windows/desktop/hh830532(v=vs.85)#methods
+    $BusTypeHashTable=@{
+    "0"="Unknown"
+    "1"="SCSI"
+    "2"="ATAPI"
+    "3"="ATA"
+    "4"="IEEE 1394"
+    "5"="SSA"
+    "6"="FibreChannel"
+    "7"="USB"
+    "8"="RAID"
+    "9"="iSCSI"
+    "10"="SAS"
+    "11"="SATA"
+    "12"="SD"
+    "13"="MMC"
+    "15"="FileBackedVirtual"
+    "16"="StorageSpaces"
+    }
+    $MediaTypeHashTable=@{
+    "0"="Unknown"
+    "3"="HDD"
+    "4"="SSD"
+    "5"="SCM"
+    }
+
+    Write-Verbose "$ComputerName Windows 8 or later detected"
+    if ($credential -eq $null)
+    {
+        $MSFT_PhysicalDisk=Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage -ComputerName $computername -ErrorAction SilentlyContinue
+    }
+    else
+    {
+       $MSFT_PhysicalDisk= Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage -ComputerName $computername -Credential $credential -ErrorAction SilentlyContinue
+    }
+    
+    if ($MSFT_PhysicalDisk -ne $null)
+    {
+        $AllHddSmart | foreach {
+            $HddSmart=$_
+            $MsftDisk=$MSFT_PhysicalDisk | Where-Object  {$_.DeviceId -eq $HddSmart.index} 
+            $InterfaceType=$BusTypeHashTable["$($MsftDisk.bustype)"]
+            $MediaType=$MediaTypeHashTable["$($MsftDisk.mediatype)"]
+            if ($InterfaceType -ne $null)
+            {
+                $HddSmart.InterfaceType=$InterfaceType
+            }
+           
+            $HddSmart | Add-Member -MemberType NoteProperty -Name Type -Value $MediaType
+            
+        }    
+        $AllHddSmart
+    }
+    else
+    {
+        $AllHddSmart | foreach {
+            $_ | Add-Member -MemberType NoteProperty -Name Type -Value "Unknown"
+            $_
+        }
+    }
+}
+else
+{
+    $AllHddSmart | foreach {
+        $_ | Add-Member -MemberType NoteProperty -Name Type -Value "Unknown"
+        $_
+    }
+}
+
+
 }

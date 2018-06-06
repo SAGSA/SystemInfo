@@ -26,8 +26,15 @@ OsProfileList=       '-Class Win32_UserProfile -Script OS\UserProfileList.ps1'
 OsSRPSettings=       '-Class Win32_UserProfile,StdRegprov -Script OS\OsSRPSettings.ps1'
 AntivirusStatus=     '-Class Win32_OperatingSystem       -Script OS\AntivirusStatus.ps1'
 UserProxySettings=   '-Class Win32_UserProfile,StdRegprov -Script OS\UserProxySettings.ps1'
+MsOfficeInfo=        '-Class StdRegprov -Script OS\MsOfficeInfo.ps1'
+NetFolderShortcuts=  '-Class Win32_UserProfile -Script OS\NetFolderShortcuts.ps1'
+NetMappedDrives=     '-Class Win32_UserProfile,StdRegprov -Script OS\NetMappedDrives.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
+
+#ActiveDirectory Section
+ADSiteName='-Class StdRegProv -Script ad\ADSiteName.ps1'
+
 #Memory section
 
 MemoryTotal=        '-Class Win32_PhysicalMemory      -Script Memory\MemoryTotal.ps1'
@@ -47,8 +54,8 @@ VideoProcessor=     '-Class Win32_VideoController -Script gpu\VideoProcessor.ps1
 
 #CPU section
 
-CPUName=            '-Class Win32_Processor -Property Name'
-CPUSocket=          '-Class Win32_Processor -Property SocketDesignation'
+CPUName=            '-Class Win32_Processor -Script CPU\CpuName.ps1'
+CPUSocket=          '-Class Win32_Processor -Script CPU\CpuSocket.ps1'
 MaxClockSpeed=      '-Class Win32_Processor -Property MaxClockSpeed'
 CPUCores=           '-Class Win32_Processor -Property NumberOfCores'
 CPULogicalCore=     '-Class Win32_Processor -Property NumberOfLogicalProcessors'
@@ -59,6 +66,10 @@ CPULoad=            '-Class Win32_Processor -Property LoadPercentage'
 Motherboard=        '-Class win32_baseboard      -Property Manufacturer'
 MotherboardModel=   '-Class Win32_BaseBoard      -Property Product'
 DeviceModel=        '-Class Win32_Computersystem -Property model'
+
+#Bios section
+
+SerialNumber=       '-Class Win32_Bios -Property SerialNumber'
 
 #Monitor section
 
@@ -96,8 +107,8 @@ SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -Format
 
 #Hdd section
 
-HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData -Script Storage\HddDevices.ps1'
-HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmart.ps1 -FormatList'
+HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_OperatingSystem -Script Storage\HddDevices.ps1'
+HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive,Win32_OperatingSystem -Script Storage\HddSmart.ps1 -FormatList'
 HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmartStatus.ps1'
 HddPartitions=      '-Class Win32_DiskDrive -Script Storage\HddPartitions.ps1'
 HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script Storage\HddVolumes.ps1'

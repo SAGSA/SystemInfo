@@ -72,6 +72,10 @@
                 <Alignment>left</Alignment>
               </TableColumnHeader>
 			  <TableColumnHeader>
+                <Label>Type</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
                 <Label>SmartStatus</Label>
                 <Alignment>left</Alignment>
               </TableColumnHeader>
@@ -98,6 +102,9 @@
                     <PropertyName>Model</PropertyName>
                   </TableColumnItem>
 				  <TableColumnItem>
+                    <PropertyName>Type</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
                     <PropertyName>SmartStatus</PropertyName>
                   </TableColumnItem>
                 </TableColumnItems>

@@ -123,7 +123,7 @@ function Get-SystemInfo
             [switch]$AppendToResult,
             [ValidateSet("*",
             "OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus",
-            "OsProfileList","OsSRPSettings","UserProxySettings","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
+            "OsProfileList","OsSRPSettings","SerialNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
             "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
@@ -162,6 +162,7 @@ $LoadScripts=@(
 "$FunctionFolderName\CreateErrorObject.ps1",
 "$FunctionFolderName\PsJob.ps1",
 "$FunctionFolderName\RunspaceJob.ps1"
+"$FunctionFolderName\GetUserProfile.ps1"
 )
 
 
@@ -300,7 +301,8 @@ else
 $CountComputers=0
 
 [Array]$ExportFunctionsName="StartWmiJob","GetWmiJob","CreateResult"
-    $PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
+    [Array]$PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
+    [Array]$PropertyReqGetUserProfileFunctions="NetFolderShortcuts","OsProfileList","NetMappedDrives"
     #$PropertyReqRegistryFunctions="OsProductKey","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus"
     $WmiParamArray | foreach {
         if ($PropertyReqHddSmartFunctions -eq $_.property)
@@ -310,6 +312,13 @@ $CountComputers=0
                 $ExportFunctionsName+="GetHddSmart"  
             }
 
+        }
+        if ($PropertyReqGetUserProfileFunctions -eq $_.property)
+        {
+           if (!($ExportFunctionsName -eq "GetUserProfile"))
+            {
+                $ExportFunctionsName+="GetUserProfile"  
+            } 
         }
         if ($_.class -eq "StdRegProv")
         {
@@ -546,7 +555,7 @@ $RunnningTime=(New-TimeSpan -Start $BeginFunction).TotalSeconds
 if ($CountComputers -gt 1)
 {
     Write-Verbose  "Function running  $RunnningTime seconds" -Verbose
-    Write-Verbose  "Speed $([math]::Round($($CountComputers/$RunnningTime),2)) cps" -Verbose
+    Write-Verbose  "Speed             $([math]::Round($($CountComputers/$RunnningTime),2)) cps" -Verbose
     Write-Verbose  "Total Computers   $CountComputers" -Verbose
     Write-Verbose  "Success           $ResultCount" -Verbose
     Write-Verbose  "Errors            $ErrResCount" -Verbose

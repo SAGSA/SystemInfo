@@ -7,7 +7,7 @@ param(
 [parameter(Mandatory=$true)]
 [string]$Value,
 [parameter(Mandatory=$true)]
-[ValidateSet("GetStringValue","GetBinaryValue","GetDWORDValue","GetMultiStringValue")]
+[ValidateSet("GetStringValue","GetBinaryValue","GetDWORDValue","GetQWORDValue","GetMultiStringValue")]
 [string]$GetValue
 )
 if ($stdregprov -eq $null)
@@ -18,6 +18,7 @@ $ResultProp=@{
 "GetStringValue"="Svalue"
 "GetBinaryValue"="Uvalue"
 "GetDWORDValue"="UValue"
+"GetQWORDValue"="UValue"
 "GetMultiStringValue"="Svalue"
 }
 $ErrorCode=@{
