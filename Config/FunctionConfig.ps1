@@ -29,6 +29,7 @@ UserProxySettings=   '-Class Win32_UserProfile,StdRegprov -Script OS\UserProxySe
 MsOfficeInfo=        '-Class StdRegprov -Script OS\MsOfficeInfo.ps1'
 NetFolderShortcuts=  '-Class Win32_UserProfile -Script OS\NetFolderShortcuts.ps1'
 NetMappedDrives=     '-Class Win32_UserProfile,StdRegprov -Script OS\NetMappedDrives.ps1'
+OsGuid=              '-Class StdRegprov -Script OS\OsGuid.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 
@@ -40,7 +41,7 @@ ADSiteName='-Class StdRegProv -Script ad\ADSiteName.ps1'
 MemoryTotal=        '-Class Win32_PhysicalMemory      -Script Memory\MemoryTotal.ps1'
 MemoryAvailable=    '-Class Win32_OperatingSystem     -Script Memory\MemoryAvailable.ps1'
 MemoryFree=         '-Class Win32_OperatingSystem     -Script Memory\MemoryFree.ps1'                           
-MemoryModules=      '-Class Win32_PhysicalMemory      -Script Memory\MemoryModules.ps1'
+MemoryModules=      '-Class Win32_PhysicalMemory       -Script Memory\MemoryModules.ps1'
 MemoryModInsCount=  '-Class Win32_PhysicalMemory      -Script Memory\MemoryModInsCount.ps1'
 MemoryMaxIns=       '-Class Win32_PhysicalMemoryArray -Script Memory\MemoryMaxIns.ps1'
 MemorySlots=        '-Class Win32_PhysicalMemoryArray -Script Memory\MemorySlots.ps1'
@@ -60,6 +61,7 @@ MaxClockSpeed=      '-Class Win32_Processor -Property MaxClockSpeed'
 CPUCores=           '-Class Win32_Processor -Property NumberOfCores'
 CPULogicalCore=     '-Class Win32_Processor -Property NumberOfLogicalProcessors'
 CPULoad=            '-Class Win32_Processor -Property LoadPercentage'
+CPUDescription=     '-Class Win32_Processor -Property Description'
 
 #Motherboard section
 
@@ -129,6 +131,7 @@ MSNdis_LinkSpeed='-Namespace Root\wmi'
 MSPower_DeviceEnable='-Namespace Root\wmi'
 MSPower_DeviceWakeEnable='-Namespace Root\wmi'
 MSNdis_DeviceWakeOnMagicPacketOnly='-Namespace Root\wmi'
+MSSMBios_RawSMBiosTables='-Namespace Root\wmi'
 }
 
 #End FunctionConfig

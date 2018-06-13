@@ -1,0 +1,1 @@
+﻿RegGetValue -Key HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography -Value MachineGuid -GetValue GetStringValue

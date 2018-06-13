@@ -111,7 +111,7 @@ $PnpDev.Keys | foreach {
     }
     $HddSmart=$PnpDev[$PnpDevid]
     $WarningThreshold=@{
-    "Temperature"=46,54
+    "Temperature"=48,54
     "Reallocated Sector Count"=1,10
     "Reallocated Event Count"=1,10
     "Offline Uncorrectable Sector Count (Uncorrectable Sector Count)"=1,10

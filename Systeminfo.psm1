@@ -122,10 +122,10 @@ function Get-SystemInfo
             [int]$JobTimeOut=120,
             [switch]$AppendToResult,
             [ValidateSet("*",
-            "OsVersion","OSArchitecture","OsCaption","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus",
+            "OsVersion","OSArchitecture","OsCaption","OsGuid","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus",
             "OsProfileList","OsSRPSettings","SerialNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
-            "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
+            "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUDescription","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
             "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
             [string[]]$Properties
             
@@ -161,8 +161,9 @@ $LoadScripts=@(
 "$FunctionFolderName\Registry.ps1",
 "$FunctionFolderName\CreateErrorObject.ps1",
 "$FunctionFolderName\PsJob.ps1",
-"$FunctionFolderName\RunspaceJob.ps1"
-"$FunctionFolderName\GetUserProfile.ps1"
+"$FunctionFolderName\RunspaceJob.ps1",
+"$FunctionFolderName\GetUserProfile.ps1",
+"$FunctionFolderName\GetSmBiosStruct.ps1"
 )
 
 
@@ -303,6 +304,7 @@ $CountComputers=0
 [Array]$ExportFunctionsName="StartWmiJob","GetWmiJob","CreateResult"
     [Array]$PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
     [Array]$PropertyReqGetUserProfileFunctions="NetFolderShortcuts","OsProfileList","NetMappedDrives"
+    [Array]$PropertyReqGetSmBiosStructFunctions="MemoryModules"
     #$PropertyReqRegistryFunctions="OsProductKey","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus"
     $WmiParamArray | foreach {
         if ($PropertyReqHddSmartFunctions -eq $_.property)
@@ -319,6 +321,13 @@ $CountComputers=0
             {
                 $ExportFunctionsName+="GetUserProfile"  
             } 
+        }
+        if ($PropertyReqGetSmBiosStructFunctions -eq $_.property)
+        {
+            if (!($ExportFunctionsName -eq "GetSmBiosStruct"))
+            {
+                $ExportFunctionsName+="GetSmBiosStruct"  
+            }     
         }
         if ($_.class -eq "StdRegProv")
         {
