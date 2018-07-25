@@ -126,7 +126,7 @@ function Get-SystemInfo
             "OsProfileList","OsSRPSettings","SerialNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUDescription","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus")] 
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo")] 
             [string[]]$Properties
             
             )
@@ -163,7 +163,8 @@ $LoadScripts=@(
 "$FunctionFolderName\PsJob.ps1",
 "$FunctionFolderName\RunspaceJob.ps1",
 "$FunctionFolderName\GetUserProfile.ps1",
-"$FunctionFolderName\GetSmBiosStruct.ps1"
+"$FunctionFolderName\GetSmBiosStruct.ps1",
+"$FunctionFolderName\GetInstalledSoftware.ps1"
 )
 
 
@@ -305,6 +306,7 @@ $CountComputers=0
     [Array]$PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
     [Array]$PropertyReqGetUserProfileFunctions="NetFolderShortcuts","OsProfileList","NetMappedDrives"
     [Array]$PropertyReqGetSmBiosStructFunctions="MemoryModules"
+    [Array]$PropertyReqGetInstalledSoftware="SoftwareList","SkypeInfo"
     #$PropertyReqRegistryFunctions="OsProductKey","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus"
     $WmiParamArray | foreach {
         if ($PropertyReqHddSmartFunctions -eq $_.property)
@@ -329,6 +331,13 @@ $CountComputers=0
                 $ExportFunctionsName+="GetSmBiosStruct"  
             }     
         }
+        if ($PropertyReqGetInstalledSoftware -eq $_.property)
+        {
+            if (!($ExportFunctionsName -eq "GetInstalledSoftware"))
+            {
+                $ExportFunctionsName+="GetInstalledSoftware"  
+            }     
+        }
         if ($_.class -eq "StdRegProv")
         {
             if (!($ExportFunctionsName -eq "RegGetValue"))
@@ -336,6 +345,7 @@ $CountComputers=0
                 $ExportFunctionsName+="RegGetValue","RegEnumKey"  
             }
         }
+        
             
     }
 

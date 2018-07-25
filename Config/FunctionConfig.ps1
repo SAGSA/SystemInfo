@@ -106,7 +106,7 @@ UsbDevices=         '-Class Win32_USBControllerDevice -Script UsbDevice\UsbDevic
 #Software section
 
 SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -FormatList'
-
+SkypeInfo=          '-Class StdRegProv -Script Software\SkypeInfo.ps1 -FormatList'
 #Hdd section
 
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_OperatingSystem -Script Storage\HddDevices.ps1'
