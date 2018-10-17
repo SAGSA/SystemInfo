@@ -77,7 +77,7 @@
     Get-ADComputer -Filter * | Get-SystemInfo -Properties OsUpTime -JobTimeOut 30 | Where-Object {$_.OsUpTime -gt $(New-TimeSpan -Days 1)}
     This command gets computers which have uptime is more than 1 day. The module activedirectory must be installed and loaded
 .EXAMPLE
-    Get-ADComputer -filter * | Get-SystemInfo -SoftwareList -JobTimeOut 240 | foreach {$_.SoftwareList} | Where-Object {$_.name -match "Google Chrome"} | Out-GridView
+    Get-ADComputer -filter * | Get-SystemInfo -SoftwareList -JobTimeOut 240 | foreach {$_.SoftwareList} | Where-Object {$_.AppName -match "Google Chrome"} | Out-GridView
     This command gets computers with google chrome browser installed. The module activedirectory must be installed and loaded
 .EXAMPLE
     $Computers=Get-Content -Path C:\Computers.txt
@@ -123,10 +123,10 @@ function Get-SystemInfo
             [switch]$AppendToResult,
             [ValidateSet("*",
             "OsVersion","OSArchitecture","OsCaption","OsGuid","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsVolumeShadowCopy","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus",
-            "OsProfileList","OsSRPSettings","SerialNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
+            "OsProfileList","OsSRPSettings","OsSrpLog","SerialNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VideoModel","VideoRam","VideoProcessor","CPUName","CPUDescription","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo")] 
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo","GoogleChromeInfo")] 
             [string[]]$Properties
             
             )
@@ -306,7 +306,7 @@ $CountComputers=0
     [Array]$PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
     [Array]$PropertyReqGetUserProfileFunctions="NetFolderShortcuts","OsProfileList","NetMappedDrives"
     [Array]$PropertyReqGetSmBiosStructFunctions="MemoryModules"
-    [Array]$PropertyReqGetInstalledSoftware="SoftwareList","SkypeInfo"
+    [Array]$PropertyReqGetInstalledSoftware="SoftwareList","SkypeInfo","GoogleChromeInfo"
     #$PropertyReqRegistryFunctions="OsProductKey","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus"
     $WmiParamArray | foreach {
         if ($PropertyReqHddSmartFunctions -eq $_.property)

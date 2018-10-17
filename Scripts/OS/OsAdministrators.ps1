@@ -1,6 +1,23 @@
 try{
     $GroupName=$Query_Win32_Group_OsAdministrators.Name
     $Computername=$Query_Win32_Group_OsAdministrators.__SERVER
+    function GetLastPasswordChange
+    {
+        param($LocalAccountName,$CurrentDate,$Computer)
+        
+        $user = ([adsi]"WinNT://$computer/$($LocalAccountName),user")
+        $pwAge    = $user.PasswordAge.Value
+        if ($pwAge -eq 0)
+        {
+            $pwLastSet=$null
+        }
+        else
+        {
+            $pwLastSet = $CurrentDate.AddSeconds(-$pwAge)
+        }
+        
+        $pwLastSet
+    }
     Write-Verbose "Administrators GroupName $GroupName"
     if ($Credential)
     {
@@ -26,33 +43,44 @@ try{
         $wmitmp | foreach{   
             if ($_.PartComponent -match '(.+:)?win32_(.+)\..+?="(.+?)",Name="(.+?)"')
             {
-            $Type=$Matches[2]
-            $Type=$Type -replace "User",""
-            $Domain=$matches[3]
-            $Name=$Matches[4]
-            $FullName="$Domain\$Name"
-            $AccountStatus=$null
-            $PasswordRequired=$Nu
-                if ($domain -eq $computername)
-                {
-                    $IsLocalAccount=$True
+                $LastPasswordChange=$null
+                $Type=$Matches[2]
+                $Type=$Type -replace "User",""
+                $Domain=$matches[3]
+                $Name=$Matches[4]
+                $FullName="$Domain\$Name"
+                $AccountStatus=$null
+                $PasswordRequired=$null
+                    if ($domain -eq $computername)
+                    {
+                        $IsLocalAccount=$True
                     
-                }
-                else
+                    }
+                    else
+                    {
+                        $IsLocalAccount=$false
+                    }
+                    if ($type -eq "Account" -and $IsLocalAccount)
+                    {
+                        $UserAccount=$LocalUserAccounts | Where-Object {$_.caption -eq $FullName}
+                        $AccountStatus=$UserAccount.status   
+                        if ($protocol -eq "WSMAN")
+                        {
+                            $Now=Get-Date
+                            $LastPasswordChange=GetLastPasswordChange -LocalAccountName $UserAccount.name -CurrentDate $Now -Computer $Computername
+                        }
+                    
+                    } 
+                $DispObj=New-Object psobject 
+                $DispObj | Add-Member -MemberType NoteProperty -Name FullName -Value "$Domain\$Name"
+                $DispObj | Add-Member -MemberType NoteProperty -Name Type -Value $Type
+                $DispObj | Add-Member -MemberType NoteProperty -Name IsLocal -Value $IsLocalAccount
+                if ($protocol -eq "WSMAN")
                 {
-                    $IsLocalAccount=$false
+                    $DispObj | Add-Member -MemberType NoteProperty -Name LastPassChange -Value $LastPasswordChange  
                 }
-                if ($type -eq "Account" -and $IsLocalAccount)
-                {
-                    $UserAccount=$LocalUserAccounts | Where-Object {$_.caption -eq $FullName}
-                    $AccountStatus=$UserAccount.status   
-                } 
-            $DispObj=New-Object psobject 
-            $DispObj | Add-Member -MemberType NoteProperty -Name FullName -Value "$Domain\$Name"
-            $DispObj | Add-Member -MemberType NoteProperty -Name Type -Value $Type
-            $DispObj | Add-Member -MemberType NoteProperty -Name IsLocal -Value $IsLocalAccount
-            $DispObj | Add-Member -MemberType NoteProperty -Name Status -Value $AccountStatus
-            $DispObjArray+=$DispObj 
+                $DispObj | Add-Member -MemberType NoteProperty -Name Status -Value $AccountStatus
+                $DispObjArray+=$DispObj 
             }
                 
         }  

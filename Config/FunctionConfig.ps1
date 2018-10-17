@@ -30,6 +30,7 @@ MsOfficeInfo=        '-Class StdRegprov -Script OS\MsOfficeInfo.ps1'
 NetFolderShortcuts=  '-Class Win32_UserProfile -Script OS\NetFolderShortcuts.ps1'
 NetMappedDrives=     '-Class Win32_UserProfile,StdRegprov -Script OS\NetMappedDrives.ps1'
 OsGuid=              '-Class StdRegprov -Script OS\OsGuid.ps1'
+OsSrpLog=            '-Class Win32_LocalTime -Script OS\OsSrpLog.ps1 -FormatList'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 
@@ -107,6 +108,7 @@ UsbDevices=         '-Class Win32_USBControllerDevice -Script UsbDevice\UsbDevic
 
 SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -FormatList'
 SkypeInfo=          '-Class StdRegProv -Script Software\SkypeInfo.ps1 -FormatList'
+GoogleChromeInfo=   '-Class StdRegProv -Script Software\GoogleChromeInfo.ps1 -FormatList'
 #Hdd section
 
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_OperatingSystem -Script Storage\HddDevices.ps1'
@@ -119,6 +121,7 @@ HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script St
 
 MeltdownSpectreStatus='-Class Win32_OperatingSystem,StdRegProv,Win32_Processor,Win32_QuickFixEngineering   -Script Vulnerabilities\MeltdownSpectreStatus.ps1'
 EternalBlueStatus=    '-Class Win32_OperatingSystem,StdRegProv                                             -Script Vulnerabilities\EternalBlueStatus.ps1'
+
 #End config
 }
 

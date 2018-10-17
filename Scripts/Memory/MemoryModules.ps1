@@ -57,6 +57,7 @@ $MemTypeSmbios=@{
 $MemTypeCpuIntel=@{
 "94"="DDR4"
 "158"="DDR4"
+"58"="DDR3"
 "42"="DDR3"
 "15"="DDR2"
 }
@@ -71,7 +72,7 @@ $MemoryType=$null
 if ($TypeWmi -eq 0 -or $TypeWmi -eq 1)
 {
     Write-Verbose "$Computername GetSmbiosStruct"
-    $DecMemtype=GetSmbiosStruct -Type 17 -Offset 12h -Value Other   
+    $DecMemtype=GetSmbiosStruct -Type 17 -Offset 12h -Value Other -ErrorAction SilentlyContinue  
     Write-Verbose "DecMemtype $DecMemtype"
     if ($DecMemtype -ne 1 -and $DecMemtype -ne 2 -and $DecMemtype -ne $null)
     {
