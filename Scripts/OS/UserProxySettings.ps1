@@ -56,7 +56,16 @@ try
         #$ISKey
         $ProxyEnable=RegGetValue -Key $ISKey -Value ProxyEnable -GetValue GetDWORDValue -ErrorAction SilentlyContinue
         $ProxyServer=RegGetValue -Key $ISKey -Value ProxyServer -GetValue GetStringValue -ErrorAction SilentlyContinue
+        $ProxyOverride=RegGetValue -Key $ISKey -Value ProxyOverride -GetValue GetStringValue -ErrorAction SilentlyContinue
         $DefConnectSet=RegGetValue -Key "$ISKey\connections" -Value DefaultConnectionSettings -GetValue GetBinaryValue -ErrorAction SilentlyContinue
+        if ($ProxyOverride -match "<Local>")
+        {
+            $BypassForLocal=$True
+        }
+        else
+        {
+            $BypassForLocal=$False    
+        }
         if ($DefConnectSet -ne $null)
         {
             $AutoDetectSettings=$AutoDetectSettingsHash[[int]$($DefConnectSet[8])]
@@ -71,9 +80,10 @@ try
         } 
         $_ | Add-Member -MemberType NoteProperty -Name Proxy -Value $ProxyServer
         $_ | Add-Member -MemberType NoteProperty -Name AutoDetectSettings -Value $AutoDetectSettings
+        $_ | Add-Member -MemberType NoteProperty -Name BypassForLocal -Value $BypassForLocal
         $_ | Add-Member -MemberType NoteProperty -Name ProxyEnable -Value $ProxyEnable   
         $_
-    } | Select-Object -Property User,Proxy,AutoDetectSettings,ProxyEnable | Sort-Object -Property ProxyEnable -Descending
+    } | Select-Object -Property User,Proxy,AutoDetectSettings,BypassForLocal,ProxyEnable | Sort-Object -Property ProxyEnable -Descending
 }
 catch
 {

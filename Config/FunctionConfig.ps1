@@ -31,6 +31,8 @@ NetFolderShortcuts=  '-Class Win32_UserProfile -Script OS\NetFolderShortcuts.ps1
 NetMappedDrives=     '-Class Win32_UserProfile,StdRegprov -Script OS\NetMappedDrives.ps1'
 OsGuid=              '-Class StdRegprov -Script OS\OsGuid.ps1'
 OsSrpLog=            '-Class Win32_LocalTime -Script OS\OsSrpLog.ps1 -FormatList'
+OsKernelPowerFailCount='-Class Win32_LocalTime -Script Os\OsKernelPowerFailCount.ps1'
+
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 
@@ -109,6 +111,8 @@ UsbDevices=         '-Class Win32_USBControllerDevice -Script UsbDevice\UsbDevic
 SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -FormatList'
 SkypeInfo=          '-Class StdRegProv -Script Software\SkypeInfo.ps1 -FormatList'
 GoogleChromeInfo=   '-Class StdRegProv -Script Software\GoogleChromeInfo.ps1 -FormatList'
+SysmonInfo=         '-Class StdRegprov -Script Software\SysmonInfo.ps1'
+
 #Hdd section
 
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_OperatingSystem -Script Storage\HddDevices.ps1'
@@ -163,5 +167,5 @@ $ExcludeParam="Verbose","AppendToResult","Debug"
 #################################################################################################################################
 #Other param
 $LocalComputer=$env:COMPUTERNAME,"Localhost","127.0.0.1"
-$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy","NetworkAdaptersPowMan"
+$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy","NetworkAdaptersPowMan","SysmonInfo"
 $RequiredExecutionPolicy="Unrestricted","RemoteSigned"

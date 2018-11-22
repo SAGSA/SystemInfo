@@ -128,3 +128,57 @@ else
 }
 
 }
+
+function RegEnumValues
+{
+[CmdletBinding()]
+param(
+[parameter(Mandatory=$true)]
+[string]$Key
+)
+$ErrorActionPreference="Stop"
+if ($stdregprov -eq $null)
+{
+    Write-Error "Variable StdRegProv Null"
+}
+$ErrorCode=@{
+"1"="Value doesn't exist"
+"2"="Key doesn't exist"
+"5"="Access Denied"
+"6"="Wrong Key String"
+}
+$hk=@{
+
+"HKEY_CLASSES_ROOT"=2147483648
+"HKEY_CURRENT_USER"=2147483649
+"HKEY_LOCAL_MACHINE"=2147483650
+"HKEY_USERS"=2147483651
+"HKEY_CURRENT_CONFIG"=2147483653
+}
+if($Key -match "(.+?)\\(.+)")
+{
+$StdRegProvResult=$StdRegProv.EnumValues($hk[$matches[1]],$matches[2])
+    if ($StdRegProvResult.returnvalue -ne 0)
+    {
+        if ($ErrorCode["$($StdRegProvResult.returnvalue)"] -ne $null)
+        {
+            $er=$ErrorCode["$($StdRegProvResult.returnvalue)"]
+        }
+        else
+        {
+            $er=$StdRegProvResult.returnvalue
+        }
+    Write-Error "$Er key $Key"
+        
+    }
+    else
+    {
+        $StdRegProvResult.snames
+    }
+}
+else
+{
+    Write-Error "$Key not valid"
+}
+
+}

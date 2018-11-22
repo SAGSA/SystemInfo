@@ -54,11 +54,11 @@
         }                  
         # Output PSCustom Object 
         $Object = New-Object -TypeName PSObject -ErrorAction Stop -Property @{  
-            Name = $AntiVirusProduct.displayName; 
+            AvName = $AntiVirusProduct.displayName; 
             Definition = $DefinitionStatus; 
             RealTimeProtection = $RealTimeProtectionStatus; 
                  
-        } | Select-Object Name,Definition,RealTimeProtection  
+        } | Select-Object AvName,Definition,RealTimeProtection  
                  
         $Object 
     }

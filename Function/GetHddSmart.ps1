@@ -37,7 +37,7 @@ param ($OsVersion)
 			'c3' { 'Hardware ECC Recovered' }
 			'c4' { 'Reallocated Event Count' }
 			'c5' { 'Current Pending Sector Count' }
-			'c6' { 'Offline Uncorrectable Sector Count (Uncorrectable Sector Count)' }
+			'c6' { 'Offline Uncorrectable Sector Count' }
 			'c7' { 'UltraDMA CRC Error Count' }
 			'c8' { 'Write Error Rate (MultiZone Error Rate)' }
 			'c9' { 'Soft Read Error Rate' }
@@ -114,13 +114,15 @@ $PnpDev.Keys | foreach {
     "Temperature"=48,54
     "Reallocated Sector Count"=1,10
     "Reallocated Event Count"=1,10
-    "Offline Uncorrectable Sector Count (Uncorrectable Sector Count)"=1,10
+    "Offline Uncorrectable Sector Count"=1,10
+    "Current Pending Sector Count"=1,10
     }
     $CriticalThreshold=@{
     "Temperature"=55
     "Reallocated Sector Count"=11
     "Reallocated Event Count"=11
-    "Offline Uncorrectable Sector Count (Uncorrectable Sector Count)"=11
+    "Offline Uncorrectable Sector Count"=11
+    "Current Pending Sector Count"=11
     }
         $HddWarning=$False
         $HddCritical=$False
@@ -135,6 +137,14 @@ $PnpDev.Keys | foreach {
                         if ($HddSmart.$Property -le $MaxWarningThreshold -and $HddSmart.$Property -ge $MinWarningThreshold)
                         {
                             $HddWarning=$true
+                            $Cause=$($Property -replace " ")+" "+[string]$($HddSmart.$Property)
+                            if ($HddSmart.$Property -ge $WarningEventCount)
+                            {
+                                $RootCause=$Cause
+                                $WarningEventCount=$HddSmart.$Property
+                            }
+                            Write-Verbose "Smart Warning $cause"
+                            
                         }
                 }
             }
@@ -144,6 +154,14 @@ $PnpDev.Keys | foreach {
                     if($HddSmart.$Property -ge $MinCriticalThreshold)
                     {
                         $HddCritical=$true
+                        $Cause=$($Property -replace " ")+" "+[string]$($HddSmart.$Property)
+                        if ($HddSmart.$Property -ge  $CriticalEventCount)
+                        {
+                            $RootCause=$Cause    
+                            $CriticalEventCount=$HddSmart.$Property
+                        }
+                        Write-Verbose "Smart Critical $cause" 
+                        
                     } 
             }
               
@@ -154,15 +172,15 @@ $PnpDev.Keys | foreach {
     {
         if ($HddWarning)
         {
-            $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Warning' 
+            $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Warning:$RootCause" 
         }
         elseif($HddCritical -or $HddSmart.PredictFailure)
         {
-            $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Critical'   
+            $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Critical:$RootCause"   
         }
         else
         {
-            $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Ok'   
+            $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok"   
         }
     }
 $AllHddSmart+=$HddSmart
