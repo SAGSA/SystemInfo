@@ -1,4 +1,9 @@
-﻿#$StdregProv=Get-WmiObject -Class StdregProv -List
+﻿#$ComputerName="localhost"
+#$StdregProv=Get-WmiObject -Class StdregProv -List -ComputerName $ComputerName
+#Hide:
+#sc sdset Sysmon D:(D;;DCLCWPDTSD;;;IU)(D;;DCLCWPDTSD;;;SU)(D;;DCLCWPDTSD;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)
+#Restore:
+#sc sdset Sysmon D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)
 try
 {
     $RegistryServiceKey='HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\'
@@ -111,29 +116,65 @@ try
     }
     function GetSysmon
     {
-        foreach($ServiceName in $(RegEnumKey -Key $RegistryServiceKey)) 
+        param([switch]$UseLogNameFind)
+        
+        if ($PSBoundParameters['UseLogNameFind'].ispresent)
         {
-            $ServiceKey=Join-Path -Path $RegistryServiceKey -ChildPath "$ServiceName"
             try
             {
+                $OwningPublisherGuid=RegGetValue -Key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\Microsoft-Windows-Sysmon/Operational" -Value OwningPublisher -GetValue GetStringValue -ErrorAction Stop
+                Write-Verbose "Found OwningPublisher $OwningPublisherGuid"
+                $SysmonPath=RegGetValue -Key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Publishers\$OwningPublisherGuid" -Value MessageFileName -GetValue GetStringValue -ErrorAction Stop
+                Write-Verbose "SysmonPath $SysmonPath"
+                $resmatch=([regex]::Match($SysmonPath,".+\\(.+)\.exe$")).groups[1]
+                if ($resmatch.success)
+                {
+                    $SysmonName= $resmatch.value  
+                }
+                else
+                {
+                    Write-Error "Value $SysmonPath not match" -ErrorAction Stop
+                }
+                $ServiceKey=Join-Path -Path $RegistryServiceKey -ChildPath $SysmonName
+                Write-Verbose "Service key $serviceKey"
                 $DriverName=RegGetValue -Key "$ServiceKey\Parameters" -Value DriverName -GetValue GetStringValue -ErrorAction Stop
-                $DriverRegKey=Join-Path $RegistryServiceKey "$DriverName\Instances\Sysmon Instance"
-        
-                $Altitude=RegGetValue -Key $DriverRegKey -Value Altitude -GetValue GetStringValue -ErrorAction Stop
-                $SysmonPath=RegGetValue -Key $ServiceKey -Value ImagePath -GetValue GetStringValue -ErrorAction Stop
-        
-                return @{SysmonName=$serviceName;SysmonPath=$SysmonPath;DriverName=$DriverName}
-        
+                Write-Verbose "DriverName $DriverName"
+                return @{SysmonName=$SysmonName;SysmonPath=$SysmonPath;DriverName=$DriverName}
             }
             catch
             {
-                Write-Verbose "Skip $ServiceKey"
+                Write-Error "Sysmon Not Found"
             }
-    
+            
         }
-        Write-Error "Sysmon Not Found" -ErrorAction Stop
+        else
+        {
+            foreach($ServiceName in $(RegEnumKey -Key $RegistryServiceKey)) 
+            {
+                $ServiceKey=Join-Path -Path $RegistryServiceKey -ChildPath "$ServiceName"
+                try
+                {
+                    $DriverName=RegGetValue -Key "$ServiceKey\Parameters" -Value DriverName -GetValue GetStringValue -ErrorAction Stop
+                    $DriverRegKey=Join-Path $RegistryServiceKey "$DriverName\Instances\Sysmon Instance"
+        
+                    $Altitude=RegGetValue -Key $DriverRegKey -Value Altitude -GetValue GetStringValue -ErrorAction Stop
+                    $SysmonPath=RegGetValue -Key $ServiceKey -Value ImagePath -GetValue GetStringValue -ErrorAction Stop
+        
+                    return @{SysmonName=$serviceName;SysmonPath=$SysmonPath;DriverName=$DriverName}
+        
+                }
+                catch
+                {
+                    Write-Verbose "Skip $ServiceKey"
+                }
+    
+            }
+            Write-Error "Sysmon Not Found" -ErrorAction Stop
+        }
+
     }
-    $SysmonInfo=GetSysmon
+    Write-Verbose "Start function GetSysmon -UseLogNameFind"
+    $SysmonInfo=GetSysmon -UseLogNameFind
     $SysmonFilePath="'"+($SysmonInfo['SysmonPath'] -replace "\\","\\")+"'"
     $SrvName=$SysmonInfo['SysmonName']
     $SrvPath=$SysmonInfo['SysmonPath']
@@ -145,6 +186,7 @@ try
     }
     else
     {
+        
         $SysmonDrFile=Get-WmiObject -Class CIM_DataFile -namespace "root\cimv2" -filter "Name=$SysmonFilePath" -ComputerName $Computername -ErrorAction Stop 
         $SysmonService=Get-WmiObject -Class win32_service -Filter "Name='$SrvName'" -ComputerName $computername
         Write-Verbose "Service state $($SysmonService.State)"

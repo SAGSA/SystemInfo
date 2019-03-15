@@ -11,6 +11,7 @@ if ($Credential)
 else
 {
     [array]$ErrorLog=get-wmiobject -query "Select * From Win32_NTLogEvent Where LogFile = 'System' And TimeWritten > '$datewmi' And EventCode = 41" -Namespace root\cimv2 -ComputerName $ComputerName
+    #[array]$ErrorLog=get-wmiobject -query "Select * From Win32_NTLogEvent Where LogFile = 'Application' And TimeWritten > '$datewmi' And EventCode = 1015" -Namespace root\cimv2 -ComputerName $ComputerName
 }
 Write-Verbose "errors in $SeeHours hours"
 [string]$Result=''

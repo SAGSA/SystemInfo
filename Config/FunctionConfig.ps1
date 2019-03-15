@@ -32,7 +32,7 @@ NetMappedDrives=     '-Class Win32_UserProfile,StdRegprov -Script OS\NetMappedDr
 OsGuid=              '-Class StdRegprov -Script OS\OsGuid.ps1'
 OsSrpLog=            '-Class Win32_LocalTime -Script OS\OsSrpLog.ps1 -FormatList'
 OsKernelPowerFailCount='-Class Win32_LocalTime -Script Os\OsKernelPowerFailCount.ps1'
-
+MseLastUpdateDate=     '-Class Win32_OperatingSystem,StdRegprov -Script os\MseLastUpdateDate.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 
@@ -125,7 +125,6 @@ HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script St
 
 MeltdownSpectreStatus='-Class Win32_OperatingSystem,StdRegProv,Win32_Processor,Win32_QuickFixEngineering   -Script Vulnerabilities\MeltdownSpectreStatus.ps1'
 EternalBlueStatus=    '-Class Win32_OperatingSystem,StdRegProv                                             -Script Vulnerabilities\EternalBlueStatus.ps1'
-
 #End config
 }
 
