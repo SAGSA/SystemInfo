@@ -167,4 +167,3 @@ $ExcludeParam="Verbose","AppendToResult","Debug"
 #Other param
 $LocalComputer=$env:COMPUTERNAME,"Localhost","127.0.0.1"
 $AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy","NetworkAdaptersPowMan","SysmonInfo"
-$RequiredExecutionPolicy="Unrestricted","RemoteSigned"

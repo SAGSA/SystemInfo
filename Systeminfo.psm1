@@ -134,11 +134,16 @@ begin
 {
 $TestAdmin = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
 $IsAdmin=$TestAdmin.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+Write-Verbose "IsAdmin $IsAdmin"
 $CurrentExecutionPolicy=Get-ExecutionPolicy
 $ExecutionPolicyChanged=$false
+$RequiredExecutionPolicy="Unrestricted","RemoteSigned"
 if (!($RequiredExecutionPolicy -eq $CurrentExecutionPolicy))
 {
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force -Confirm:$false 
+    Write-Verbose "Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force"
+    try
+    {
+        Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force -Confirm:$false 
         if ($?)
         {
             $ExecutionPolicyChanged=$true
@@ -147,6 +152,13 @@ if (!($RequiredExecutionPolicy -eq $CurrentExecutionPolicy))
         {
             Write-Error "Formatting objects does not work. Run the command Set-ExecutionPolicy -ExecutionPolicy RemoteSigned and retry now" -ErrorAction Stop
         }    
+    }
+    catch
+    {
+    
+        Write-Error "RequiredExecutionPolicy $RequiredExecutionPolicy" -ErrorAction Stop
+    }
+    
 }
 #LoadFunctions
 #####################################################################################################
