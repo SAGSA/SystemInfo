@@ -20,6 +20,7 @@
                 {
                     $InstallLocation=RegGetValue -key $ChildPath -Value "InstallLocation" -GetValue GetStringValue -ErrorAction SilentlyContinue
                     $UninstallString=RegGetValue -key $ChildPath -Value "UninstallString" -GetValue GetStringValue -ErrorAction SilentlyContinue
+                    $UninstallString=($UninstallString -replace '{',' "{') -replace '}','}"'
                     $TmpObject | Add-Member -MemberType NoteProperty -Name InstallLocation -Value $InstallLocation
                     $TmpObject | Add-Member -MemberType NoteProperty -Name UninstallString -Value $UninstallString
                 }

@@ -34,6 +34,7 @@ OsSrpLog=            '-Class Win32_LocalTime -Script OS\OsSrpLog.ps1 -FormatList
 OsKernelPowerFailCount='-Class Win32_LocalTime -Script Os\OsKernelPowerFailCount.ps1'
 MseLastUpdateDate=     '-Class Win32_OperatingSystem,StdRegprov -Script os\MseLastUpdateDate.ps1'
 OsMstscVersion=          '-Class Win32_OperatingSystem -Script os\OsRdpVersion.ps1'
+OsPowerPlan='-Class win32_PowerPlan -Script os\ospowerplan.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 
@@ -139,6 +140,7 @@ MSPower_DeviceEnable='-Namespace Root\wmi'
 MSPower_DeviceWakeEnable='-Namespace Root\wmi'
 MSNdis_DeviceWakeOnMagicPacketOnly='-Namespace Root\wmi'
 MSSMBios_RawSMBiosTables='-Namespace Root\wmi'
+win32_PowerPlan='-Namespace Root\cimv2\power'
 }
 
 #End FunctionConfig
