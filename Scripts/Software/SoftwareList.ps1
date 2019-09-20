@@ -8,5 +8,5 @@ $MatchExcludeSoftware = @(
 "Update for Microsoft Office",
 " Update for Microsoft Office"
 )
-GetInstalledSoftware -MatchExcludeSoftware $MatchExcludeSoftware
+GetInstalledSoftware -MatchExcludeSoftware $MatchExcludeSoftware -DisplayAdvInfo
 

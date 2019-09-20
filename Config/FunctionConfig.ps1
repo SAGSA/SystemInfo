@@ -33,6 +33,7 @@ OsGuid=              '-Class StdRegprov -Script OS\OsGuid.ps1'
 OsSrpLog=            '-Class Win32_LocalTime -Script OS\OsSrpLog.ps1 -FormatList'
 OsKernelPowerFailCount='-Class Win32_LocalTime -Script Os\OsKernelPowerFailCount.ps1'
 MseLastUpdateDate=     '-Class Win32_OperatingSystem,StdRegprov -Script os\MseLastUpdateDate.ps1'
+OsMstscVersion=          '-Class Win32_OperatingSystem -Script os\OsRdpVersion.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 
