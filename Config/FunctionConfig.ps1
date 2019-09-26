@@ -1,21 +1,22 @@
 #Default Information (information output when executed Get-SystemInfo without parameters)
 $DefaultInfoConfig=@(
-"OsCaption","OsArchitecture","OsUpTime","OsLoggedInUser","CPUName","MotherboardModel","DeviceModel","MemoryTotal","MemoryModules","HddDevices","VideoModel","MonitorName","CdRom"
+"OsCaption","OsVersion","OsArchitecture","OsUpTime","OsLoggedInUser","CPUName","MotherboardModel","DeviceModel","MemoryTotal","MemoryModules","HddDevices","VideoModel","MonitorName","CdRom"
 )
 #FunctionConfig
 $FunctionConfig=@{
 
 #Os section
 
-OsVersion=           '-Class Win32_OperatingSystem -Property Version'
+OsBuild=             '-Class Win32_OperatingSystem -Property Version'
+OsVersion=           '-Class StdRegProv -Script os\osversion.ps1'
 OsCaption=           '-Class Win32_OperatingSystem -Property Caption'
 OSArchitecture=      '-Class Win32_OperatingSystem -Property OSArchitecture'
 OsInstallDate=       '-Class Win32_OperatingSystem -Script OS\OsInstallDate.ps1'
 OsUpTime=            '-Class Win32_OperatingSystem -Script OS\OsUptime.ps1 '
-OsProductKey=        '-Class StdRegProv            -Script OS\OsProductKey.ps1'
+OsProductKey=        '-Class StdRegProv -Script OS\OsProductKey.ps1'
 OsLoggedInUser=      '-Class Win32_ComputerSystem  -Property UserName'
 OsAdministrators=    '-Query SELECT * FROM Win32_Group WHERE SID="S-1-5-32-544" -Script OS\OsAdministrators.ps1'
-OsActivationStatus=  '-Query Select * From SoftwareLicensingProduct Where ApplicationID = "55c92734-d682-4d71-983e-d6ec3f16059f" And Licensestatus > 0 -Script OS\OsActivationStatus.ps1'
+OsActivationStatus=  '-Class stdregprov -Script OS\OsActivationStatus.ps1'
 OsLastUpdateDaysAgo= '-Class Win32_QuickFixEngineering -Script OS\OsLastUpdated.ps1'
 OsTimeZone=          '-Class Win32_TimeZone -Property Caption'
 OsVolumeShadowCopy=  '-Class Win32_Volume,Win32_ShadowCopy -Script OS\VolumeShadowCopy.ps1'
@@ -148,7 +149,7 @@ win32_PowerPlan='-Namespace Root\cimv2\power'
 #Config Switch Param
 
 $SwitchConfig=@{
-OSInfo="OsVersion","OSArchitecture","OsCaption","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsActivationStatus","OsAdministrators","AntivirusStatus"
+OSInfo="OsCaption","OsVersion","OsBuild","OSArchitecture","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsActivationStatus","OsAdministrators","AntivirusStatus"
 Cpu="CPUName","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad"
 Hdd="HddDevices","HddPartitions","HddVolumes"
 Motherboard="Motherboard","MotherboardModel","DeviceModel"

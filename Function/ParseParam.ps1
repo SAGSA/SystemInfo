@@ -70,8 +70,12 @@ $ArrayParamString | foreach {
         $ParseValue=$Matches[2]
             if ($ParseValue -match ",")
             {
-                $ArrayParseValue=$ParseValue -split ","
-                $ParseValue=$ArrayParseValue
+                if ($ParseParam -ne "Query")
+                {
+                    $ArrayParseValue=$ParseValue -split ","
+                    $ParseValue=$ArrayParseValue
+                }
+                
             }
         $HashTableParam.Add($ParseParam,$ParseValue)
         
