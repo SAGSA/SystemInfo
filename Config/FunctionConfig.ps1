@@ -19,7 +19,6 @@ OsAdministrators=    '-Query SELECT * FROM Win32_Group WHERE SID="S-1-5-32-544" 
 OsActivationStatus=  '-Class stdregprov -Script OS\OsActivationStatus.ps1'
 OsLastUpdateDaysAgo= '-Class Win32_QuickFixEngineering -Script OS\OsLastUpdated.ps1'
 OsTimeZone=          '-Class Win32_TimeZone -Property Caption'
-OsVolumeShadowCopy=  '-Class Win32_Volume,Win32_ShadowCopy -Script OS\VolumeShadowCopy.ps1'
 OsTenLatestHotfix=   '-Class Win32_QuickFixEngineering -Script OS\TenLatestUpdates.ps1'
 OsUpdateAgentVersion='-Class Win32_OperatingSystem -Script OS\UpdateAgentVersion.ps1'
 OSRebootRequired=    '-Class Win32_OperatingSystem,StdRegProv -Script OS\RebootRequired.ps1'
@@ -123,7 +122,10 @@ HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver
 HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmartStatus.ps1'
 HddPartitions=      '-Class Win32_DiskDrive -Script Storage\HddPartitions.ps1'
 HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script Storage\HddVolumes.ps1'
-
+VolumeQuotaSetting= '-Class Win32_Quotasetting,win32_volume -Script Storage\VolumeQuotaSetting.ps1'
+VolumeQuotaList=    '-Class Win32_DiskQuota -Script Storage\VolumeQuotaList.ps1'
+VolumeShadowCopy=  '-Class Win32_Volume,Win32_ShadowCopy -Script Storage\VolumeShadowCopy.ps1'
+VolumeShadowStorage="-Class Win32_ShadowStorage,Win32_Volume -Script Storage\VolumeShadowStorage.ps1"
 #Vulnerabilities section
 
 MeltdownSpectreStatus='-Class Win32_OperatingSystem,StdRegProv,Win32_Processor,Win32_QuickFixEngineering   -Script Vulnerabilities\MeltdownSpectreStatus.ps1'
@@ -170,4 +172,4 @@ $ExcludeParam="Verbose","AppendToResult","Debug"
 #################################################################################################################################
 #Other param
 $LocalComputer=$env:COMPUTERNAME,"Localhost","127.0.0.1"
-$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","OsVolumeShadowCopy","NetworkAdaptersPowMan","SysmonInfo"
+$AdminRequired="HDDSmart","HddDevices","HddSmartStatus","VolumeShadowCopy","VolumeShadowStorage","VolumeQuotaList","VolumeQuotaSetting","NetworkAdaptersPowMan","SysmonInfo"

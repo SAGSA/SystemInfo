@@ -55,6 +55,230 @@
         <View>
             <Name>Default</Name>
             <ViewSelectedBy>
+                <TypeName>ModuleSystemInfo.Systeminfo.Hdd.VolumeQuotaList</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+            <TableHeaders>
+              <TableColumnHeader>
+                <Label>User</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>DiskSpaceUsed</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>Limit</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>WarningLimit</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>VolumePath</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>Status</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+              <TableRowEntry>
+                <TableColumnItems>
+                  <TableColumnItem>
+                    <PropertyName>User</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.DiskSpaceUsed -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.DiskSpaceUsed/1gb))+"Gb"
+                    }
+                    elseif ($_.DiskSpaceUsed -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.DiskSpaceUsed/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.DiskSpaceUsed/1mb))+"Mb"
+                    }
+                    </ScriptBlock>
+                  </TableColumnItem>
+                 <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.limit -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.limit/1gb))+"Gb"
+                    }
+                    elseif ($_.limit -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.limit/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.limit/1mb))+"Mb"
+                    }
+                    </ScriptBlock>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.WarningLimit -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.WarningLimit/1gb))+"Gb"
+                    }
+                    elseif ($_.WarningLimit -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.WarningLimit/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.WarningLimit/1mb))+"Mb"
+                    }
+					</ScriptBlock>
+				  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>VolumePath</PropertyName>
+                  </TableColumnItem>
+				  <TableColumnItem>
+                    <PropertyName>Status</PropertyName>
+                  </TableColumnItem>
+                </TableColumnItems>
+              </TableRowEntry>
+            </TableRowEntries>
+          </TableControl>
+        </View>       
+		<View>
+            <Name>Default</Name>
+            <ViewSelectedBy>
+                <TypeName>ModuleSystemInfo.Systeminfo.Hdd.VolumeQuotaSetting</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+            <TableHeaders>
+              <TableColumnHeader>
+                <Label>State</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>VolumePath</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>DefaultWarningLimit</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>DefaultLimit</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>FreeSpace</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+              <TableRowEntry>
+                <TableColumnItems>
+                  <TableColumnItem>
+                    <PropertyName>State</PropertyName>
+                  </TableColumnItem>
+				  <TableColumnItem>
+                    <PropertyName>VolumePath</PropertyName>
+                  </TableColumnItem>
+				  <TableColumnItem>
+                    <PropertyName>DefaultWarningLimit</PropertyName>
+                  </TableColumnItem>
+				  <TableColumnItem>
+                    <PropertyName>DefaultLimit</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.FreeSpace -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.FreeSpace/1gb))+"Gb"
+                    }
+                    elseif ($_.FreeSpace -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.FreeSpace/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.FreeSpace/1mb))+"Mb"
+                    }
+					</ScriptBlock>
+					</TableColumnItem>
+                </TableColumnItems>
+              </TableRowEntry>
+            </TableRowEntries>
+          </TableControl>
+        </View>       
+		<View>
+            <Name>Default</Name>
+            <ViewSelectedBy>
+                <TypeName>ModuleSystemInfo.Systeminfo.Hdd.VolumeShadowStorage</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+            <TableHeaders>
+              <TableColumnHeader>
+                <Label>DriveLetter</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
+                <Label>UsedSpace</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+			  <TableColumnHeader>
+                <Label>MaxSpace</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+              <TableRowEntry>
+                <TableColumnItems>
+                  <TableColumnItem>
+                    <PropertyName>DriveLetter</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.UsedSpace -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.UsedSpace/1gb))+"Gb"
+                    }
+                    elseif ($_.UsedSpace -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.UsedSpace/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.UsedSpace/1mb))+"Mb"
+                    }
+					</ScriptBlock>
+					</TableColumnItem>
+					<TableColumnItem>
+                    <ScriptBlock>
+                    if ($_.MaxSpace -ge 1gb)
+                    {
+                        [string]('{0:N2}' -f ($_.MaxSpace/1gb))+"Gb"
+                    }
+                    elseif ($_.MaxSpace -le 1mb)
+                    {
+                        [string]('{0:N2}' -f ($_.MaxSpace/1kb))+"Kb"
+                    }
+                    else
+                    {
+                        [string]('{0:N2}' -f ($_.MaxSpace/1mb))+"Mb"
+                    }
+					</ScriptBlock>
+					</TableColumnItem>
+                </TableColumnItems>
+              </TableRowEntry>
+            </TableRowEntries>
+          </TableControl>
+        </View>       
+		<View>
+            <Name>Default</Name>
+            <ViewSelectedBy>
                 <TypeName>ModuleSystemInfo.Systeminfo.Hdd.Devices</TypeName>
             </ViewSelectedBy>
             <TableControl>
@@ -279,7 +503,7 @@
               </TableRowEntry>
             </TableRowEntries>
           </TableControl>
-        </View>       
+		</View>       
             <View>
             <Name>Default</Name>
             <ViewSelectedBy>

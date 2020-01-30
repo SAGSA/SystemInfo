@@ -1,3 +1,4 @@
+#$stdregProv = Get-Wmiobject -list "StdRegProv" -namespace root\default
 function RegGetValue
 {
 [CmdletBinding()]

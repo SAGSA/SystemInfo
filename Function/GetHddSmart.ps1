@@ -98,7 +98,7 @@ $PnpDev.Keys | foreach {
 				        if (( $i - 3 ) % 12 -eq 6 ) 
                         {
 					        if ( $Attribute -eq '09' ) { [int]$Value = $Value / 24 }
-				            $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name $(Get-AttributeDescription $Attribute) -Value $Value
+				            $PnpDev[$PnpDevid] | Add-Member -MemberType NoteProperty -Name $(Get-AttributeDescription $Attribute) -Value $Value -Force
                         }
 			        }
 			        $pByte = $Byte
