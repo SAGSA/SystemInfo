@@ -25,6 +25,7 @@ OSRebootRequired=    '-Class Win32_OperatingSystem,StdRegProv -Script OS\RebootR
 OsProfileList=       '-Class Win32_UserProfile -Script OS\UserProfileList.ps1'
 OsSRPSettings=       '-Class Win32_UserProfile,StdRegprov -Script OS\OsSRPSettings.ps1'
 AntivirusStatus=     '-Class Win32_OperatingSystem       -Script OS\AntivirusStatus.ps1'
+LastInteractiveUser= '-Class Win32_ComputerSystem -Script OS\LastInteractiveUser.ps1'
 UserProxySettings=   '-Class Win32_UserProfile,StdRegprov -Script OS\UserProxySettings.ps1'
 MsOfficeInfo=        '-Class StdRegprov -Script OS\MsOfficeInfo.ps1'
 NetFolderShortcuts=  '-Class Win32_UserProfile -Script OS\NetFolderShortcuts.ps1'
