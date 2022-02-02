@@ -34,6 +34,18 @@ try
     {
         $Win32UserProfiles=$Win32_UserProfile | Where-Object {!($ExcludeSid -eq $_.sid)} 
     }
+    function GetProfileStatus
+    {
+        Param($ProfileStatus)
+            switch($ProfileStatus)
+            {      
+                1 { "Temporary" }
+                2 { "Roaming" }
+                4 { "Mandatory" }
+                8 { "Corrupted" }
+                default { "LOCAL" }
+            }
+    }
     
     $Win32UserProfiles | Select-Object -Property * | foreach {
         $Sid=$_.sid
@@ -41,6 +53,7 @@ try
         $User=$null
         $ProfileDirectory=$null
         $LocalPath=$_.localpath
+        $ProfileStatus=GetProfileStatus -ProfileStatus $_.status
         $objSID = New-Object System.Security.Principal.SecurityIdentifier($Sid) 
         try
         {
@@ -59,8 +72,9 @@ try
         }
        
        $_ | Add-Member -MemberType NoteProperty -Name User -Value $User
+       $_ | Add-Member -MemberType NoteProperty -Name ProfileStatus -Value $ProfileStatus
        $_
-    } | Select-Object -Property User,SID,LocalPath,Loaded | foreach {$AllUserProfiles+=$_}    
+    } | Select-Object -Property User,SID,LocalPath,Loaded,ProfileStatus | foreach {$AllUserProfiles+=$_}    
 $AllUserProfiles
 }
 catch

@@ -62,6 +62,7 @@ $CpuNameSocket=@{
 "Pentium(R) Dual-Core CPU E5300 @ 2.60GHz"="LGA775"
 "Pentium(R) Dual-Core CPU T4400 @ 2.20GHz"="PGA478"
 "Intel(R) Xeon(R) CPU E5420 @ 2.50GHz"="LGA771"
+"Intel(R) Pentium(R) CPU G4400 @ 3.30GHz"="FCLGA1151"
 }
 $Win32_Processor | foreach {
     $CpuName=$($_.name -replace "\s+"," ")

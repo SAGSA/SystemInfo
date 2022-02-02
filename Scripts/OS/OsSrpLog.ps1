@@ -1,6 +1,4 @@
-﻿#$ComputerName="LocalHost"
-#$Win32_LocalTime=Get-WmiObject -Class Win32_LocalTime -Namespace root\cimv2 -ComputerName $ComputerName
-[int]$SeeHours=24
+﻿[int]$SeeHours=24
 $currentDate= Get-Date -Year $Win32_LocalTime.Year -Month $Win32_LocalTime.Month -Day $Win32_LocalTime.Day -Hour $Win32_LocalTime.Hour -Minute $Win32_LocalTime.Minute -Second $Win32_LocalTime.Second
 $date=$currentDate.AddHours(-$SeeHours)
 [wmi]$WmiObject=''

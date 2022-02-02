@@ -15,7 +15,7 @@ OsInstallDate=       '-Class Win32_OperatingSystem -Script OS\OsInstallDate.ps1'
 OsUpTime=            '-Class Win32_OperatingSystem -Script OS\OsUptime.ps1 '
 OsProductKey=        '-Class StdRegProv -Script OS\OsProductKey.ps1'
 OsLoggedInUser=      '-Class Win32_ComputerSystem  -Property UserName'
-OsAdministrators=    '-Query SELECT * FROM Win32_Group WHERE SID="S-1-5-32-544" -Script OS\OsAdministrators.ps1'
+OsAdministrators=    '-Class Win32_ComputerSystem -Script OS\OsAdministrators.ps1'
 OsActivationStatus=  '-Class stdregprov -Script OS\OsActivationStatus.ps1'
 OsLastUpdateDaysAgo= '-Class Win32_QuickFixEngineering -Script OS\OsLastUpdated.ps1'
 OsTimeZone=          '-Class Win32_TimeZone -Property Caption'
@@ -115,7 +115,8 @@ SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -Format
 SkypeInfo=          '-Class StdRegProv -Script Software\SkypeInfo.ps1 -FormatList'
 GoogleChromeInfo=   '-Class StdRegProv -Script Software\GoogleChromeInfo.ps1 -FormatList'
 SysmonInfo=         '-Class StdRegprov -Script Software\SysmonInfo.ps1'
-
+Software1cInfo=     '-Class StdRegprov -Script Software\1cInfo.ps1 -FormatList'
+Server1cInfo=       '-Class StdRegprov -Script Software\Server1cInfo.ps1 -FormatList'
 #Hdd section
 
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_OperatingSystem -Script Storage\HddDevices.ps1'

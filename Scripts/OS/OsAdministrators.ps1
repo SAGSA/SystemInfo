@@ -1,4 +1,15 @@
 try{
+    $CName=$Win32_Computersystem.name
+    $QueryWin32_group="SELECT Name,__SERVER FROM Win32_Group WHERE Domain="+'"'+$CName+'" and SID="S-1-5-32-544"'
+    if ($Credential)
+    {
+        $Query_Win32_Group_OsAdministrators=Get-WmiObject -ComputerName $Computername -Query $QueryWin32_group -Credential $Credential -ErrorAction Stop
+    }
+    else
+    {
+        $Query_Win32_Group_OsAdministrators=Get-WmiObject -ComputerName $Computername -Query $QueryWin32_group -ErrorAction Stop 
+    }
+    
     $GroupName=$Query_Win32_Group_OsAdministrators.Name
     $Computername=$Query_Win32_Group_OsAdministrators.__SERVER
     function GetLastPasswordChange

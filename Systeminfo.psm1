@@ -126,7 +126,7 @@ function Get-SystemInfo
             "OsProfileList","OsSRPSettings","OsSrpLog","OsMstscVersion","OsPowerPlan","LastInteractiveUser","SerialNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VolumeQuotaSetting","VolumeQuotaList","VolumeShadowCopy","VolumeShadowStorage","VideoModel","VideoRam","VideoProcessor","CPUName","CPUDescription","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo","GoogleChromeInfo","SysmonInfo","OsKernelPowerFailCount","MseLastUpdateDate")] 
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo","GoogleChromeInfo","SysmonInfo","Software1cInfo","Server1cInfo","OsKernelPowerFailCount","MseLastUpdateDate")] 
             [string[]]$Properties
             
             )
@@ -318,7 +318,7 @@ $CountComputers=0
     [Array]$PropertyReqHddSmartFunctions="HddDevices","HddSmartStatus","HddSmart"
     [Array]$PropertyReqGetUserProfileFunctions="NetFolderShortcuts","OsProfileList","NetMappedDrives"
     [Array]$PropertyReqGetSmBiosStructFunctions="MemoryModules"
-    [Array]$PropertyReqGetInstalledSoftware="SoftwareList","SkypeInfo","GoogleChromeInfo"
+    [Array]$PropertyReqGetInstalledSoftware="SoftwareList","SkypeInfo","GoogleChromeInfo","Software1cInfo"
     #$PropertyReqRegistryFunctions="OsProductKey","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus"
     $WmiParamArray | foreach {
         if ($PropertyReqHddSmartFunctions -eq $_.property)

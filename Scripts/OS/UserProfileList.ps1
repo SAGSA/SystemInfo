@@ -25,7 +25,7 @@
         $_ | Add-Member -MemberType NoteProperty -Name LastModified -Value $LastUseTime
         $_
         
-    } | Sort-Object -Property LastModified -Descending | Select-Object -Property User,LocalPath,Loaded,LastModified
+    } | Sort-Object -Property LastModified -Descending | Select-Object -Property User,LocalPath,Loaded,LastModified,ProfileStatus
 }
 catch
 {
