@@ -1,0 +1,1 @@
+﻿RegGetValue -Key HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS -Value SystemSKU -GetValue GetStringValue -ErrorAction SilentlyContinue

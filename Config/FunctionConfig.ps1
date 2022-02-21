@@ -78,6 +78,7 @@ DeviceModel=        '-Class Win32_Computersystem -Property model'
 #Bios section
 
 SerialNumber=       '-Class Win32_Bios -Property SerialNumber'
+ProductNumber=      '-Class StdRegProv -Script bios\ProductNumber.ps1'
 
 #Monitor section
 
@@ -111,7 +112,7 @@ UsbDevices=         '-Class Win32_USBControllerDevice -Script UsbDevice\UsbDevic
 
 #Software section
 
-SoftwareList=       '-Class StdRegProv -Script Software\SoftwareList.ps1 -FormatList'
+SoftwareList=       '-Class StdRegProv,Win32_UserProfile -Script Software\SoftwareList.ps1 -FormatList'
 SkypeInfo=          '-Class StdRegProv -Script Software\SkypeInfo.ps1 -FormatList'
 GoogleChromeInfo=   '-Class StdRegProv -Script Software\GoogleChromeInfo.ps1 -FormatList'
 SysmonInfo=         '-Class StdRegprov -Script Software\SysmonInfo.ps1'

@@ -1,3 +1,4 @@
+#https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-physicalmemory
 $MemTypeWmi=@{
 '0'='Unknown';
 '1'='Other';
@@ -23,7 +24,9 @@ $MemTypeWmi=@{
 '22'='DDR2 FB-DIMM'
 '24'='DDR3'
 '25'='FBD2'
+'26'='DDR4'
 }
+#https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.4.0a.pdf
 $MemTypeSmbios=@{
 "1"= "Other"
 "2"="Unknown"
@@ -52,14 +55,18 @@ $MemTypeSmbios=@{
 "28"="LPDDR2"
 "29"="LPDDR3"
 "30"="LPDDR4"
+"34"="DDR5"
+"35"="LPDDR5"
 }
 
+#We assume that the processor supports only one type of memory. List created manuall. Key processor model, value memory type. Only Intel processor
 $MemTypeCpuIntel=@{
 "94"="DDR4"
 "158"="DDR4"
 "58"="DDR3"
 "42"="DDR3"
 "15"="DDR2"
+"165"="DDR4"
 }
 
 #$MemModules=$Win32_PhysicalMemory | Select-Object Capacity,MemoryType,Speed,Manufacturer,PartNumber
