@@ -24,13 +24,21 @@ process
         if ($UpdateFormatData)
         {
             #Remove old ps1xml file
-            if (Test-Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml"))
+            $ps1xmlfile=join-path $env:TEMP -ChildPath "SystemInfoAutoformat.ps1xml"
+            if (Test-Path $ps1xmlfile)
             {
-                Write-Verbose "Remove old ps1xml file $($env:TEMP+"\SystemInfoAutoformat.ps1xml")"
-                Remove-Item -Path $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -Force
+                Write-Verbose "Remove old ps1xml file $ps1xmlfile"
+                try
+                {
+                    Get-Item -Path $ps1xmlfile -ErrorAction Stop | Remove-Item -Force -ErrorAction Stop
+                }
+                catch
+                {
+                    Write-Verbose "Can't delete file $ps1xmlfile"
+                }
             }
             CreateFormatPs1xml -ForObject  $Result -ErrorAction Stop
-            Update-FormatData -PrependPath $($env:TEMP+"\SystemInfoAutoformat.ps1xml") -ErrorAction SilentlyContinue
+            Update-FormatData -PrependPath $ps1xmlfile -ErrorAction SilentlyContinue
             Set-Variable -Name UpdateFormatData -Value $false -Scope 1 -Force
         }
         $Result.psobject.typenames.insert(0,"ModuleSystemInfo.Systeminfo.AutoFormatObject") 
