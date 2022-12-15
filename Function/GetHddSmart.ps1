@@ -1,3 +1,4 @@
+#$Protocol="wsman"
 #$Win32_DiskDrive=Get-WmiObject -Class Win32_DiskDrive
 #$MSStorageDriver_FailurePredictData=Get-WmiObject -Class MSStorageDriver_FailurePredictData -Namespace Root\wmi
 #$MSStorageDriver_FailurePredictStatus=Get-WmiObject -Class MSStorageDriver_FailurePredictStatus -Namespace Root\wmi
@@ -328,59 +329,9 @@ switch ($Value) {
         {
            $MSFT_PhysicalDisk= Get-WmiObject -Class MSFT_PhysicalDisk -Namespace root\Microsoft\Windows\Storage -ComputerName $computername -Credential $credential -ErrorAction SilentlyContinue
         }
-    
-        <#if ($MSFT_PhysicalDisk -ne $null)
-        {
-            $AllHddSmart | foreach {
-                $HddSmart=$_
-                $MsftDisk=$MSFT_PhysicalDisk | Where-Object  {$_.DeviceId -eq $HddSmart.index} 
-                $InterfaceType=$BusTypeHashTable["$($MsftDisk.bustype)"]
-                if($HddSmart.PNPDeviceID -match "nvme"){
-                    $InterfaceType="NVMe"
-                }
-                $MediaType=$MediaTypeHashTable["$($MsftDisk.mediatype)"]
-                if ($InterfaceType -ne $null)
-                {
-                    $HddSmart.InterfaceType=$InterfaceType
-                    if($InterfaceType -eq "NVMe"){
-                        if($Protocol -eq "WSMAN"){
-                            $NVMeSmartResult=GetNvmeSmart -PhyDrvNo  $HddSmart.Index
-                            $NVMeSmartResult | Get-Member | Where-Object {
-                                $_.membertype -eq "NoteProperty"
-                            } | foreach {
-                                    $PropertyName=$_.Name
-                                    if(-not [string]::IsNullOrEmpty($PropertyName)){
-                                        $PropertyValue=$NVMeSmartResult.$PropertyName
-                                        $HddSmart | Add-Member -MemberType NoteProperty -Name $PropertyName -Value $PropertyValue
-                                    }
-                                         
-                            }
-                        }else{
-                            Write-Verbose "$ComputerName Use wsman protocol to get smart options for nwme"
-                        }
-                    }
-                }
-           
-                $HddSmart | Add-Member -MemberType NoteProperty -Name Type -Value $MediaType
-            
-            }    
-            $AllHddSmart
-        }
-        else
-        {
-            $AllHddSmart | foreach {
-                $_ | Add-Member -MemberType NoteProperty -Name Type -Value "Unknown"
-                $_
-            }
-        }#>
+
     }
-    <#else
-    {
-        $AllHddSmart | foreach {
-            $_ | Add-Member -MemberType NoteProperty -Name Type -Value "Unknown"
-            $_
-        }
-    }#>
+    
     $PnpDev.Keys | foreach {
         $PnpDevid=$_
         $TmpFailData=$MSStorageDriver_FailurePredictData | Where-Object  {$_.InstanceName -Match $PnpDevid}
@@ -427,7 +378,7 @@ switch ($Value) {
         }
         $HddSmart=$PnpDev[$PnpDevid]
         if ($MSFT_PhysicalDisk -ne $null){
-            $MsftDisk=$MSFT_PhysicalDisk | Where-Object  {$_.DeviceId -eq $PnpDevid}
+            $MsftDisk=$MSFT_PhysicalDisk | Where-Object  {$_.DeviceId -eq $HddSmart.Index}
             $InterfaceType=$BusTypeHashTable["$($MsftDisk.bustype)"]
             if($HddSmart.PNPDeviceID -match "nvme"){
                     $InterfaceType="NVMe"
@@ -439,27 +390,37 @@ switch ($Value) {
                 if($InterfaceType -eq "NVMe"){
                     if($Protocol -eq "WSMAN"){
                         Write-Verbose "$ComputerName GetNvmeSmart -PhyDrvNo  $($HddSmart.Index)"
-                        $NVMeSmartResult=GetNvmeSmart -PhyDrvNo  $HddSmart.Index
-                        $NVMeSmartResult | Get-Member | Where-Object {
-                            $_.membertype -eq "NoteProperty"
-                        } | foreach {
-                                $PropertyName=$_.Name
-                                if(-not [string]::IsNullOrEmpty($PropertyName)){
-                                    $PropertyValue=$NVMeSmartResult.$PropertyName
-                                    $HddSmart | Add-Member -MemberType NoteProperty -Name $PropertyName -Value $PropertyValue
+                        try{
+                            $NVMeSmartResult=GetNvmeSmart -PhyDrvNo  $HddSmart.Index -ErrorAction Stop
+                            $NVMeSmartResult | Get-Member | Where-Object {
+                                $_.membertype -eq "NoteProperty"
+                            } | foreach {
+                                    $PropertyName=$_.Name
+                                    if(-not [string]::IsNullOrEmpty($PropertyName)){
+                                        $PropertyValue=$NVMeSmartResult.$PropertyName
+                                        $HddSmart | Add-Member -MemberType NoteProperty -Name $PropertyName -Value $PropertyValue
                                     
-                                }
-                                         
+                                    }             
+                            }
+                            if ([int]$HddSmart.PercentageUsed -gt 0){
+                                $HddSmart | Add-Member -MemberType NoteProperty -Name SSDLife -Value $(100-$HddSmart.PercentageUsed)
+                            }elseif([int]$HddSmart.PercentageUsed -eq 0){
+                                $HddSmart | Add-Member -MemberType NoteProperty -Name SSDLife -Value 100
+                            }
+                        
+                        }catch{
+                            
+                            Write-Verbose "$ComputerName $_"
                         }
-                        if ([int]$HddSmart.PercentageUsed -gt 0){
-                            $HddSmart | Add-Member -MemberType NoteProperty -Name SSDLife -Value $(100-$HddSmart.PercentageUsed)
-                        }elseif([int]$HddSmart.PercentageUsed -eq 0){
-                            $HddSmart | Add-Member -MemberType NoteProperty -Name SSDLife -Value 100
-                        }
+
                     }else{
                         Write-Verbose "$ComputerName Use wsman protocol to get smart options for nwme"
                     }
+                    if($NVMeSmartResult -eq $null){
+                        $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Unknown' 
+                    }
                 }
+                
             }
            
                 $HddSmart | Add-Member -MemberType NoteProperty -Name Type -Value $MediaType
