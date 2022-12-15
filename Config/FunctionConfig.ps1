@@ -122,7 +122,7 @@ Server1cInfo=       '-Class StdRegprov -Script Software\Server1cInfo.ps1 -Format
 
 HddDevices=         '-Class Win32_DiskDrive,MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_OperatingSystem -Script Storage\HddDevices.ps1'
 HDDSmart=           '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive,Win32_OperatingSystem -Script Storage\HddSmart.ps1 -FormatList'
-HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive -Script Storage\HddSmartStatus.ps1'
+HddSmartStatus=     '-Class MSStorageDriver_FailurePredictStatus,MSStorageDriver_FailurePredictData,Win32_DiskDrive,Win32_OperatingSystem -Script Storage\HddSmartStatus.ps1'
 HddPartitions=      '-Class Win32_DiskDrive -Script Storage\HddPartitions.ps1'
 HddVolumes=         '-Class Win32_Volume,Win32_LogicalDiskToPartition -Script Storage\HddVolumes.ps1'
 VolumeQuotaSetting= '-Class Win32_Quotasetting,win32_volume -Script Storage\VolumeQuotaSetting.ps1'

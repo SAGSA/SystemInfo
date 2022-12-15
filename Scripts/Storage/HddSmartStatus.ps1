@@ -1,1 +1,1 @@
-GetHddSmart | foreach {$_.smartstatus}
+GetHddSmart -OsVersion $($Win32_OperatingSystem.version) | foreach {$_.smartstatus}

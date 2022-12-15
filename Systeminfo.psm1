@@ -286,6 +286,8 @@ else
 
 [ScriptBlock]$SbLocalHost=
 {
+    $Protocol="Wsman"
+    Write-Verbose "$ComputerName Protocol $Protocol"
     $HashtableWMi=@{}
     $WmiParamArray | foreach {
         $WmiParam=$_
