@@ -419,6 +419,8 @@ switch ($Value) {
                     if($NVMeSmartResult -eq $null){
                         $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Unknown' 
                     }
+                }elseif(-not $TmpFailData){
+                    $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Unknown'
                 }
                 
             }
