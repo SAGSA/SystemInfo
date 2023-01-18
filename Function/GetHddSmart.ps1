@@ -433,7 +433,7 @@ switch ($Value) {
         if($HddSmart.InterfaceType -eq "NVMe"){
             $WarningTempThreshold=@(61,65)
         }else{
-            $WarningTempThreshold=@(46,54)
+            $WarningTempThreshold=@(48,54)
         }
         
         
@@ -519,6 +519,8 @@ switch ($Value) {
             {
                 if ($HddSmart.SSDLife -ne $null){
                     $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok:$($HddSmart.SSDLife)%" 
+                }elseif([int]$HddSmart.'Endurance Remaining' -gt 0){
+                    $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok:$($HddSmart.'Endurance Remaining')%" 
                 }else{
                     $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok"  
                 }

@@ -27,7 +27,7 @@
                 <TableColumnHeader>
                 <Label>PartNumber</Label>
                 <Alignment>left</Alignment>
-              </TableColumnHeader>   
+              </TableColumnHeader>			  
             </TableHeaders>
             <TableRowEntries>
               <TableRowEntry>
@@ -46,7 +46,7 @@
                   </TableColumnItem>
                   <TableColumnItem>
                     <PropertyName>PartNumber</PropertyName>
-                  </TableColumnItem>                 
+                  </TableColumnItem> 			  
                 </TableColumnItems>
               </TableRowEntry>
             </TableRowEntries>

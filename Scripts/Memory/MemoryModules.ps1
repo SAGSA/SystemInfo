@@ -134,11 +134,12 @@ $Win32_PhysicalMemory | foreach {
         }
     
     $Property=@{
-    Capacity=$_.capacity
-    MemoryType=$MemoryType
-    Speed=$_.speed
-    Manufacturer=$_.Manufacturer
-    PartNumber=$_.PartNumber
+        Capacity=$_.capacity
+        MemoryType=$MemoryType
+        Speed=$_.speed
+        Manufacturer=$_.Manufacturer
+        PartNumber=$_.PartNumber
+        DeviceLocator=$_.DeviceLocator
     }
     $MemModule=New-Object Psobject -Property $Property
     $MemModule.psobject.typenames.insert(0,"ModuleSystemInfo.SystemInfo.Memory.Modules")
