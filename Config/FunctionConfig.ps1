@@ -79,6 +79,7 @@ DeviceModel=        '-Class Win32_Computersystem -Property model'
 
 SerialNumber=       '-Class Win32_Bios -Property SerialNumber'
 ProductNumber=      '-Class StdRegProv -Script bios\ProductNumber.ps1'
+BiosInfo=           '-Class Win32_Bios -Script bios\BiosInfo.ps1'
 
 #Monitor section
 
