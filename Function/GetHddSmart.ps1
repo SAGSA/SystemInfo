@@ -443,6 +443,7 @@ switch ($Value) {
             "Reallocated Event Count"=1,10
             "Offline Uncorrectable Sector Count"=1,10
             "Current Pending Sector Count"=1,10
+            "MediaDataIntegrityErrors"=10,20
         }
         if($HddSmart.InterfaceType -eq "NVMe"){
             $CriticalTempThreshold=69
@@ -456,6 +457,7 @@ switch ($Value) {
             "Reallocated Event Count"=11
             "Offline Uncorrectable Sector Count"=11
             "Current Pending Sector Count"=11
+            "MediaDataIntegrityErrors"=21
         }
             
             $HddWarning=$False
