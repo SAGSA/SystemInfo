@@ -1,4 +1,5 @@
 $ManufacturerHashTable = @{ 
+    "AUS" ="Asus";
     "AAC" =	"AcerView";
     "ACR" = "Acer";
     "AOC" = "AOC";
@@ -30,6 +31,7 @@ $ManufacturerHashTable = @{
     "HSL" = "Hansol";
     "HTC" = "Hitachi/Nissei";
     "HWP" = "HP";
+    "HPN" = "HP";
     "IBM" = "IBM";
     "ICL" = "Fujitsu ICL";
     "IVM" = "Iiyama";
@@ -68,14 +70,20 @@ $ManufacturerHashTable = @{
 }
 if ($wmiMonitorID.ManufacturerName -ne $null)
 {
-$manuf = $null
-$manuf= ([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.ManufacturerName)).Replace("$([char]0x0000)","")			 			
-    if ($ManufacturerHashTable["$manuf"])
-    {
-        $ManufacturerHashTable["$manuf"]
+    $Manufacturers = $null
+    $Manufacturers= ([System.Text.Encoding]::ASCII.GetString($wmiMonitorID.ManufacturerName)).Replace("$([char]0x0000)",",")	
+    $Manufacturers=($Manufacturers-replace ",+$","") -replace ",+",","
+    [string[]]$Manufacturers=$Manufacturers -split ","
+    $Manufacturers | foreach{
+        $manuf=$_
+        if ($ManufacturerHashTable["$manuf"])
+        {
+            $ManufacturerHashTable["$manuf"]
+        }
+        else
+        {
+            $manuf
+        }	
     }
-    else
-    {
-        $manuf
-    }	
+    
 }
