@@ -1,5 +1,5 @@
 # Very fast get system information on a local or remote computer
-This module contains PowerShell function Get-SystemInfo that gets  system information via WMI.
+This module contains PowerShell function Get-SystemInfo that gets  system information.
 ## Description
 The function uses multithreading. Multithreading is implemented through powershell runspace and PsJob
 
@@ -17,11 +17,11 @@ $ErrorResult-contains computers that have errors.
 ## Module Installation
 ### If you use powershell v5 or later
 * Run powershell command Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
-* Run powershell command Install-Module -Name Systeminfo -Scope CurrentUser
+* Run powershell command Install-Module -Name Systeminfo
 ### else
 * Run powershell command Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 * Find your PSModule paths by running $env:PSModulePath.Split(";") in a Powershell prompt
-* Download the archive SystemInfo_v1.1.3.zip and extract to any one of these paths
+* Download the archive module and extract to any one of these paths
 * Restart powershell console
 * If you have Powershell 3 or higher running the command Get-SystemInfo will automatically import the module, otherwise you'll need to run Import-Module SystemInfo and then run the command.
 ## Help usage
