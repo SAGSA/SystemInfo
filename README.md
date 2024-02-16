@@ -171,55 +171,5 @@ Motherboard       : Gigabyte Technology Co., Ltd.
 ``` powershell
 Get-Help Get-SystemInfo -Examples
 ```
-## Properties help
-Information | Property | Description |
-|-|----------|-------------|
-|Os| OsVersion |Get OS Version number |
-| | OSArchitecture |Get OS Architecture|
-| | OsCaption | Get OS Caption |
-| | OsInstallDate |Get OS InstallDate |
-| | OsUpTime |Get OS Uptime |
-| | OsLoggedInUser | User logged in |
-| | OsProductKey | Get OS ProductKey |
-| | OsActivationStatus | Get Os ActivationStatus|
-| | OsAdministrators | Get Os Administrators |
-| Memory | MemoryTotal |Get Memory Total |
-| | MemoryFree |Get Memory Free |
-| | MemoryModules |Get Memory Modules |
-| | MemoryModInsCount |Get Memory modules install count |
-| | MemoryMaxIns |Get Memory Maximum Install |
-| | MemorySlots |Get Memory Slots |
-| | ECCType |Get memory ECCType |
-| | MemoryAvailable |Get Memory Available |
-| Motherboard | Motherboard |Get Motherboard Manufacturer|
-| | MotherboardModel |Get Motherboard Model |
-| | DeviceModel |Get Device Model |
-| Cdrom | Cdrom |Get Cdrom |
-| | CdromMediatype |Get Cdrom Mediatype |
-| HDD | HddDevices |Get Hdd devices |
-| | HddDevCount |Get Hdd device count |
-| | HddPredictFailure |Get HddPredictFailure |
-| | HddSmart | Get Hdd Smart |
-| Video | VideoModel |Get Video Model |
-| | VideoRam |Get Video Ram |
-| | VideoProcessor |Get Video Processor |
-| CPU | CPUName |Get CPU Name |
-| | CPUSocket |Get CPU Socket |
-| | MaxClockSpeed | Maximum Clock Speed |
-| | CPUCores | CPU Cores |
-| | CPULogicalCore |Get CPU LogicalCore |
-| | CPULoad |Get CPU Load |
-| Monitor | MonitorManuf |Get Monitor Manuf |
-| | MonitorPCode |Get Monitor PCode |
-| | MonitorSN |Get Monitor SN |
-| | MonitorName |Get Monitor Name |
-| | MonitorYear |Get Monitor Year |
-| Network Adapters | NetPhysAdapCount |Get Network Adapter Count |
-| | NetworkAdapters |Get Network Adapters |
-| Printers | Printers |Get installed Printers |
-| | IsPrintServer | IsPrintServer |
-| | UsbConPrOnline |Get usb Connection Printer Online |
-| Usb devices | UsbDevices |Get usb Devices |
-| Software | SoftwareList | List installed software|
 
 DO NOT USE IN A PRODUCTION ENVIRONMENT UNTIL YOU HAVE TESTED THOROUGHLY IN A LAB ENVIRONMENT. USE AT YOUR OWN RISK. IF YOU DO NOT UNDERSTAND WHAT THIS SCRIPT DOES OR HOW IT WORKS, DO NOT USE OUTSIDE OF A SECURE, TEST SETTING.
