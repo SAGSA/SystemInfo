@@ -22,6 +22,7 @@ $ErrorResult-contains computers that have errors.
 * Run powershell command Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 * Find your PSModule paths by running $env:PSModulePath.Split(";") in a Powershell prompt
 * Download the archive module and extract to any one of these paths
+* Rename the "SystemInfo-master" folder to "SystemInfo"
 * Restart powershell console
 * If you have Powershell 3 or higher running the command Get-SystemInfo will automatically import the module, otherwise you'll need to run Import-Module SystemInfo and then run the command.
 ## Help usage
