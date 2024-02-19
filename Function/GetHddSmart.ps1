@@ -1,18 +1,19 @@
 #$Protocol="wsman"
-#$Win32_DiskDrive=Get-WmiObject -Class Win32_DiskDrive
-#$MSStorageDriver_FailurePredictData=Get-WmiObject -Class MSStorageDriver_FailurePredictData -Namespace Root\wmi
-#$MSStorageDriver_FailurePredictStatus=Get-WmiObject -Class MSStorageDriver_FailurePredictStatus -Namespace Root\wmi
-#$Win32_OperatingSystem=Get-WmiObject -Class Win32_OperatingSystem
 #$computername="localhost"
+#$Win32_DiskDrive=Get-WmiObject -Class Win32_DiskDrive -ComputerName $computername
+#$MSStorageDriver_FailurePredictData=Get-WmiObject -Class MSStorageDriver_FailurePredictData -Namespace Root\wmi -ComputerName $computername
+#$MSStorageDriver_FailurePredictStatus=Get-WmiObject -Class MSStorageDriver_FailurePredictStatus -Namespace Root\wmi -ComputerName $computername
+#$Win32_OperatingSystem=Get-WmiObject -Class Win32_OperatingSystem
+
 function GetHddSmart
 {
     param ($OsVersion)
-	    function ConvertTo-Hex ( $DEC ) {
-		    '{0:x2}' -f [int]$DEC
-	    }
-	    function ConvertTo-Dec ( $HEX ) {
-		    [Convert]::ToInt32( $HEX, 16 )
-	    }
+function ConvertTo-Hex ( $DEC ) {
+	'{0:x2}' -f [int]$DEC
+}
+function ConvertTo-Dec ( $HEX ) {
+	[Convert]::ToInt32( $HEX, 16 )
+}
 function GetNvmeSmart{
 <#
     source https://github.com/ken-yossy/nvmetool-win-powershell/blob/main/scripts/get-smart-log.ps1
@@ -284,8 +285,63 @@ switch ($Value) {
 			default { $Value }
 		}
 	}
+function GetDiskErrorCountEventFromEventLog{
+    [cmdletbinding()]
+    param(
+        [parameter(Mandatory=$true)]
+        [string]$ComputerName
+    )
+    [int]$MaxHours=72#(3 days)
+    if ($Credential)
+    {
+        $Win32_LocalTime=Get-WmiObject -Class Win32_LocalTime -Namespace root\cimv2 -ComputerName $ComputerName -Credential $Credential   
+    }
+    else
+    {
+        $Win32_LocalTime=Get-WmiObject -Class Win32_LocalTime -Namespace root\cimv2 -ComputerName $ComputerName
+    }
+    $currentDate= Get-Date -Year $Win32_LocalTime.Year -Month $Win32_LocalTime.Month -Day $Win32_LocalTime.Day -Hour $Win32_LocalTime.Hour -Minute $Win32_LocalTime.Minute -Second $Win32_LocalTime.Second
 
+    function GetDiskErrorEvent
+    {
+        [cmdletbinding()]
+        param(
+            [parameter(Mandatory=$true)]
+            [string]$ComputerName,
+            [parameter(Mandatory=$true)]
+            $StartDate,
+            [parameter(Mandatory=$true)]
+            [int]$MaxHours
+        )
+    
+        [wmi]$WmiObject=''
+        $DateHoursAgo=$StartDate.AddHours(-$MaxHours)
+        $WmiStartDate=$WmiObject.ConvertFromDateTime($StartDate)
+        $WmiDateHoursAgo=$WmiObject.ConvertFromDateTime($DateHoursAgo)
+        Write-Verbose "$ComputerName GetDiskEvent Start $StartDate End $DateHoursAgo"
+        if ($Credential)
+        {
+            [array]$LogEntries=get-wmiobject -query "Select * From Win32_NTLogEvent Where LogFile = 'System' and TimeWritten < '$WmiStartDate' And TimeWritten > '$WmiDateHoursAgo'  and SourceName='Disk' and EventType=1" -Namespace root\cimv2 -ErrorAction Stop -ComputerName $ComputerName -Credential $Credential
+        }
+        else
+        {
+            [array]$LogEntries=get-wmiobject -query "Select * From Win32_NTLogEvent Where LogFile = 'System' and TimeWritten < '$WmiStartDate' And TimeWritten > '$WmiDateHoursAgo'  and SourceName='Disk' and EventType=1" -Namespace root\cimv2 -ErrorAction Stop -ComputerName $ComputerName
+        }
+        $DiskIndexEvents=@()
+        $LogEntries | foreach {
+          $_.InsertionStrings      
+        }
+    
+    }
+
+    $DiskErrorEvents=GetDiskErrorEvent -StartDate $CurrentDate -MaxHours $MaxHours -ComputerName $ComputerName
+    if ($DiskErrorEvents.Count -ge 1){
+        $DiskErrorEvents | Group-Object
+    }
+}
     $PnpDev=@{}
+    $DiskErrorCountEventFromEventLog=$null
+    $GetDiskCountEventFromEventLogFunctRunning=$false
     $hdddev=$Win32_DiskDrive | Select-Object Model,Size,MediaType,InterfaceType,FirmwareRevision,SerialNumber,PNPDeviceID,Index
     $hdddev | foreach {
         $PnpDev.Add($($_.pnpdeviceid -replace "\\","\\"),$_)
@@ -414,7 +470,7 @@ switch ($Value) {
                         }
 
                     }else{
-                        Write-Verbose "$ComputerName Use wsman protocol to get smart options for nwme"
+                        Write-Verbose "$ComputerName Use WSMAN protocol to get smart options for NVMe!!!" -Verbose
                     }
                     if($NVMeSmartResult -eq $null){
                         $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value 'Unknown' 
@@ -429,6 +485,22 @@ switch ($Value) {
         }else{
             $HddSmart  | Add-Member -MemberType NoteProperty -Name Type -Value "Unknown"
         }
+       
+            if(-not $GetDiskCountEventFromEventLogFunctRunning){
+                Write-Verbose "$ComputerName running GetDiskErrorCountEventFromEventLog"
+                $DiskErrorCountEventFromEventLog=GetDiskErrorCountEventFromEventLog -ComputerName $ComputerName -ErrorAction SilentlyContinue
+                $GetDiskCountEventFromEventLogFunctRunning=$true
+            }
+            $HddSmart  | Add-Member -MemberType NoteProperty -Name ErrorRecordsFromEventLog -Value 0
+            if($DiskErrorCountEventFromEventLog.count -ge 1){
+                $DevMatchString="\\Device\\Harddisk"+$HddSmart.Index+"\\"
+                $DiskErrorCountEventFromEventLog | foreach {
+                    if($_.Name -match $DevMatchString){
+                        $CountEvents=$_.count
+                        $HddSmart.ErrorRecordsFromEventLog=$CountEvents
+                    }
+                }     
+            }
         
         if($HddSmart.InterfaceType -eq "NVMe"){
             $WarningTempThreshold=@(61,65)

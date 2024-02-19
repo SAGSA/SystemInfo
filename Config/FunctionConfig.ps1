@@ -36,6 +36,7 @@ OsKernelPowerFailCount='-Class Win32_LocalTime -Script Os\OsKernelPowerFailCount
 MseLastUpdateDate=     '-Class Win32_OperatingSystem,StdRegprov -Script os\MseLastUpdateDate.ps1'
 OsMstscVersion=          '-Class Win32_OperatingSystem -Script os\OsRdpVersion.ps1'
 OsPowerPlan='-Class win32_PowerPlan -Script os\ospowerplan.ps1'
+OsBSoD='-Class Win32_OperatingSystem -Script os\OsBSoD.ps1'
 #Powershell section
 PsVersion= '-Class StdRegProv -Script Ps\PsVersion.ps1'
 

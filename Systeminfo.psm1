@@ -25,28 +25,6 @@
     hat is returned by the Get-Credential cmdlet. When you type a user name, you are prompted for a password.
 .EXAMPLE
     Get-SystemInfo
-    ComputerName     : Localhost
-    OsCaption        : Майкрософт Windows 10 Pro
-    OsArchitecture   : 64-разрядная
-    OsUpTime         : 10:1:17:41
-    OsLoggedInUser   : Domain\Username
-    CPUName          : Intel(R) Core(TM) i3-2105 CPU @ 3.10GHz
-    MotherboardModel : H61M-S1
-    DeviceModel      : To be filled by O.E.M.
-    MemoryTotal      : 4,0Gb
-    MemoryModules    :
-                       Capacity MemoryType Speed Manufacturer PartNumber
-                       -------- ---------- ----- ------------ ----------
-                       2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
-                       2Gb      DDR3       1333  Kingston     99U5595-005.A00LF
-    HddDevices       :
-                       Size  InterfaceType Model                           SmartStatus
-                       ----  ------------- -----                           --------------
-                       112Gb IDE           KINGSTON SHFS37A120G ATA Device ОК
-                       149Gb IDE           ST3160813AS ATA Device          OK
-    VideoModel       : Intel(R) HD Graphics 3000
-    MonitorName      : E2042
-    CdRom            : TSSTcorp CDDVDW SH-222BB
     This command get the system information on the local computer.
 .EXAMPLE
     Get-SystemInfo -Computername comp1,comp2,comp3
@@ -71,8 +49,11 @@
     This command gets computers that have a RAM size less than 1.5 gb. List of computers is taken from the file C:\Computers.txt. This command use parameter -WarningAction SilentlyContinue to ignore warning.
     
 .EXAMPLE
-    Get-Content -Path C:\Computers.txt  | Get-SystemInfo -Properties OsLoggedInUser,HddSmart | Where-Object {$_.hddsmart.smartstatus -Match "Critical" -or $_.hddsmart.smartstatus -Match "Warning"}
+    Get-Content -Path C:\Computers.txt  | Get-SystemInfo -Properties OsLoggedInUser,HddSmart -Protocol WSMAN | Where-Object {$_.hddsmart.smartstatus -Match "Critical" -or $_.hddsmart.smartstatus -Match "Warning"}
     This command gets computers that have hard disk problems. List of computers is taken from the file C:\Computers.txt
+.EXAMPLE
+    Get-AdComputer -filter * | Get-SystemInfo -Properties OsKernelPowerFailCount,OsBSod,HDDSmart -Protocol WSMAN | Select-Object -Property @("ComputerName","OsKernelPowerFailCount",@{Name='LastBSoD';Expression={$_.OsBSoD.LastBSoD}},@{Name='BSoDCount';Expression={$_.OsBSoD.BSoDCount}},@{Name='HddModel';Expression={$_.HDDSmart.Model}},@{Name='SmartStatus';Expression={$_.HDDSmart.SmartStatus}},@{Name='ErrorRecordsFromEventlog';Expression={$_.HDDSmart.ErrorRecordsFromEventlog}}) | Out-GridView
+    This command can be used to find disk related problems. The module activedirectory must be installed and loaded. 
 .EXAMPLE
     Get-ADComputer -Filter * | Get-SystemInfo -Properties OsUpTime -JobTimeOut 30 | Where-Object {$_.OsUpTime -gt $(New-TimeSpan -Days 1)}
     This command gets computers which have uptime is more than 1 day. The module activedirectory must be installed and loaded
@@ -123,7 +104,7 @@ function Get-SystemInfo
             [switch]$AppendToResult,
             [ValidateSet("*",
             "OsVersion","OsBuild","OSArchitecture","OsCaption","OsGuid","OsLastUpdateDaysAgo","OsInstallDate","OsUpTime","OsLoggedInUser","OsTimeZone","OsProductKey","OsTenLatestHotfix","OsUpdateAgentVersion","OSRebootRequired","OsAdministrators","OsActivationStatus",
-            "OsProfileList","OsSRPSettings","OsSrpLog","OsMstscVersion","OsPowerPlan","LastInteractiveUser","SerialNumber","ProductNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount","BiosInfo",
+            "OsProfileList","OsSRPSettings","OsSrpLog","OsMstscVersion","OsPowerPlan","OsBSoD","LastInteractiveUser","SerialNumber","ProductNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount","BiosInfo",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VolumeQuotaSetting","VolumeQuotaList","VolumeShadowCopy","VolumeShadowStorage","VideoModel","VideoRam","VideoProcessor","CPUName","CPUDescription","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
             "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo","GoogleChromeInfo","SysmonInfo","Software1cInfo","Server1cInfo","OsKernelPowerFailCount","MseLastUpdateDate")] 
