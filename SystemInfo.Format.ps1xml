@@ -300,6 +300,10 @@
                 <Alignment>left</Alignment>
               </TableColumnHeader>
               <TableColumnHeader>
+                <Label>DriveLetter</Label>
+                <Alignment>left</Alignment>
+              </TableColumnHeader>
+              <TableColumnHeader>
                 <Label>SmartStatus</Label>
                 <Alignment>left</Alignment>
               </TableColumnHeader>
@@ -327,6 +331,9 @@
                   </TableColumnItem>
 				  <TableColumnItem>
                     <PropertyName>Type</PropertyName>
+                  </TableColumnItem>
+                  <TableColumnItem>
+                    <PropertyName>DriveLetter</PropertyName>
                   </TableColumnItem>
                   <TableColumnItem>
                     <PropertyName>SmartStatus</PropertyName>

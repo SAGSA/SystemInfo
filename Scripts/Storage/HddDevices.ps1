@@ -4,6 +4,8 @@ $DispInfo=GetHddSmart -OsVersion $($Win32_OperatingSystem.version)| foreach {
         InterfaceType=$_.InterfaceType
         Model=$_.Model
         Type=$_.Type
+        DriveLetter=$_.DriveLetter
+        IsSystemDisk=$_.IsSystemDisk
         SmartStatus=$_.SmartStatus
     }
     $TmpObj=New-Object psobject -Property $Property
@@ -11,4 +13,4 @@ $DispInfo=GetHddSmart -OsVersion $($Win32_OperatingSystem.version)| foreach {
     $TmpObj
 }
 
-$DispInfo
+$DispInfo | Sort-Object -Property IsSystemDisk -Descending

@@ -3,7 +3,9 @@
 #$Win32_DiskDrive=Get-WmiObject -Class Win32_DiskDrive -ComputerName $computername
 #$MSStorageDriver_FailurePredictData=Get-WmiObject -Class MSStorageDriver_FailurePredictData -Namespace Root\wmi -ComputerName $computername
 #$MSStorageDriver_FailurePredictStatus=Get-WmiObject -Class MSStorageDriver_FailurePredictStatus -Namespace Root\wmi -ComputerName $computername
-#$Win32_OperatingSystem=Get-WmiObject -Class Win32_OperatingSystem
+#$Win32_OperatingSystem=Get-WmiObject -Class Win32_OperatingSystem -ComputerName $computername
+#$Win32_LogicalDiskToPartition=Get-WmiObject -Class Win32_LogicalDiskToPartition -ComputerName $computername
+#$Win32_Volume=Get-WmiObject -Class Win32_Volume -ComputerName $computername
 
 function GetHddSmart
 {
@@ -339,6 +341,52 @@ function GetDiskErrorCountEventFromEventLog{
         $DiskErrorEvents | Group-Object
     }
 }
+function GetDiskVolumeLetters{
+    [cmdletbinding()]
+    param(
+        [parameter(Mandatory=$true)]
+        [int]$DiskNum
+    )
+    $ASSOCIATORSTable=@{}
+    $Win32_LogicalDiskToPartition | foreach{
+            if ($_.Dependent -match '.+=\"(.+:)\"')
+            {
+                $DDrive=$Matches[1]
+            }
+            if ($_.Antecedent -match '.+=\"(.+)\"')
+            {
+                $DiskIndex=$Matches[1] -replace " "
+            }
+            $ASSOCIATORSTable.add($DDrive,$DiskIndex)
+        }
+    $DiskVolumeLetters=@()
+    $Win32_Volume | foreach {
+        $Volume=$_
+        $DiskIndexPartIndex=$null
+        $Disk=$null
+        $Partition=$null
+        if ($Volume.DriveLetter)
+        {
+            $DiskIndexPartIndex=$ASSOCIATORSTable[$Volume.DriveLetter]
+            if ($DiskIndexPartIndex -match ".+#(.+),.+#(.+)")
+            {
+                [int]$Disk=$Matches[1]
+                #$Partition=$Matches[2]
+                #Write-Verbose "$disk $($Volume.DriveLetter)" -Verbose
+                $DiskVolumeLetter=New-Object -TypeName psobject
+                $DiskVolumeLetter | Add-Member -MemberType NoteProperty -Name DiskIndex -Value $Disk
+                $DiskVolumeLetter | Add-Member -MemberType NoteProperty -Name VolumeLetter -Value $Volume.DriveLetter
+                $DiskVolumeLetters+=$DiskVolumeLetter
+            }
+        }
+    }
+    [string[]]$DriveLetters=@()
+    $DiskVolumeLetters | Where-Object {$_.DiskIndex -eq $DiskNum} | foreach {
+        $DriveLetters+=$_.VolumeLetter
+    }
+    $DriveLetters
+}
+    
     $PnpDev=@{}
     $DiskErrorCountEventFromEventLog=$null
     $GetDiskCountEventFromEventLogFunctRunning=$false
@@ -491,7 +539,15 @@ function GetDiskErrorCountEventFromEventLog{
                 $DiskErrorCountEventFromEventLog=GetDiskErrorCountEventFromEventLog -ComputerName $ComputerName -ErrorAction SilentlyContinue
                 $GetDiskCountEventFromEventLogFunctRunning=$true
             }
+            [string[]]$DiskVolumeLetters=GetDiskVolumeLetters -DiskNum $HddSmart.Index
+            $SystemDriveLetter=$Win32_OperatingSystem.SystemDrive
             $HddSmart  | Add-Member -MemberType NoteProperty -Name ErrorRecordsFromEventLog -Value 0
+            $HddSmart  | Add-Member -MemberType NoteProperty -Name DriveLetter -Value $DiskVolumeLetters
+            if($DiskVolumeLetters -match $SystemDriveLetter){
+                $HddSmart  | Add-Member -MemberType NoteProperty -Name IsSystemDisk -Value $true
+            }else{
+                $HddSmart  | Add-Member -MemberType NoteProperty -Name IsSystemDisk -Value $False
+            }
             if($DiskErrorCountEventFromEventLog.count -ge 1){
                 $DevMatchString="\\Device\\Harddisk"+$HddSmart.Index+"\\"
                 $DiskErrorCountEventFromEventLog | foreach {
