@@ -355,9 +355,14 @@ function GetDiskVolumeLetters{
             }
             if ($_.Antecedent -match '.+=\"(.+)\"')
             {
-                $DiskIndex=$Matches[1] -replace " "
+                [string[]]$DiskIndex=$Matches[1] -replace " "
             }
-            $ASSOCIATORSTable.add($DDrive,$DiskIndex)
+            if($ASSOCIATORSTable.ContainsKey($DDrive)){
+                $ASSOCIATORSTable.$DDrive+=$DiskIndex
+            }else{
+                $ASSOCIATORSTable.add($DDrive,$DiskIndex)
+            }
+            
         }
     $DiskVolumeLetters=@()
     $Win32_Volume | foreach {
@@ -367,16 +372,19 @@ function GetDiskVolumeLetters{
         $Partition=$null
         if ($Volume.DriveLetter)
         {
-            $DiskIndexPartIndex=$ASSOCIATORSTable[$Volume.DriveLetter]
-            if ($DiskIndexPartIndex -match ".+#(.+),.+#(.+)")
-            {
-                [int]$Disk=$Matches[1]
-                #$Partition=$Matches[2]
-                #Write-Verbose "$disk $($Volume.DriveLetter)" -Verbose
-                $DiskVolumeLetter=New-Object -TypeName psobject
-                $DiskVolumeLetter | Add-Member -MemberType NoteProperty -Name DiskIndex -Value $Disk
-                $DiskVolumeLetter | Add-Member -MemberType NoteProperty -Name VolumeLetter -Value $Volume.DriveLetter
-                $DiskVolumeLetters+=$DiskVolumeLetter
+            $DiskIndexPartIndexs=$ASSOCIATORSTable[$Volume.DriveLetter]
+            $DiskIndexPartIndexs | foreach {
+                $DiskIndexPartIndex=$_
+                if ($DiskIndexPartIndex -match ".+#(.+),.+#(.+)")
+                {
+                    [int]$Disk=$Matches[1]
+                    #$Partition=$Matches[2]
+                    #Write-Verbose "$disk $($Volume.DriveLetter)" -Verbose
+                    $DiskVolumeLetter=New-Object -TypeName psobject
+                    $DiskVolumeLetter | Add-Member -MemberType NoteProperty -Name DiskIndex -Value $Disk
+                    $DiskVolumeLetter | Add-Member -MemberType NoteProperty -Name VolumeLetter -Value $Volume.DriveLetter
+                    $DiskVolumeLetters+=$DiskVolumeLetter
+                }
             }
         }
     }
