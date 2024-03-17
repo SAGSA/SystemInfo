@@ -659,6 +659,18 @@ function GetDiskVolumeLetters{
                     $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok:$($HddSmart.SSDLife)%" 
                 }elseif([int]$HddSmart.'Endurance Remaining' -gt 0){
                     $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok:$($HddSmart.'Endurance Remaining')%" 
+                }elseif($HddSmart.model -match "intel" -and $($HddSmart.'Load ''In''-time') -ne $null){
+                    try{
+                        $SSDLifeIntel=[math]::Ceiling($(100-$($($HddSmart.'Load ''In''-time')/1024)))
+                        $HddSmart | Add-Member -MemberType NoteProperty -Name SSDLife -Value $SSDLifeIntel
+                        $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value $("Ok:$SSDLifeIntel%")
+                    
+                    }catch{
+                        Write-Verbose $_
+                        $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok"
+                    }
+                    
+                      
                 }else{
                     $HddSmart | Add-Member -MemberType NoteProperty -Name SmartStatus -Value "Ok"  
                 }
