@@ -54,7 +54,7 @@ try
     {
     param(
     [string]$SysmonPath,
-    [string]$Algorithm="sha1"
+    [string]$Algorithm="md5"
     )
     
         $Command=$Sysmonpath+" -c"
@@ -80,20 +80,24 @@ try
             }
 
         }while($retry)
-        $ExcludeString="RuleConfiguration","Servicename","Drivername","SystemMonitor","Copyright","Sysinternals"
+        #$ExcludeString="RuleConfiguration","Servicename","Drivername","SystemMonitor","Copyright","Sysinternals"
         #$SysmonOut=Invoke-Expression $Command -ErrorAction Stop
         [System.Collections.ArrayList]$SysmonOut=$SysmonOut | foreach {
 
-            $($_ -replace " ","").Trim()
+            #$($_ -replace " ","").Trim()
+            $_.Trim()
         }
-
-        $ExcludeString | foreach {
-               $Exclude=$_
-               if($m=$SysmonOut -match $Exclude)
-               {
+        [string]$SysmonOut=$SysmonOut -join ","
+        if($SysmonOut -match "Rule Configuration(.+?,)(.+)"){
+            $RuleConfig=$Matches[2]
+        }
+        <#$ExcludeString | foreach {
+                $Exclude=$_
+                if($m=$SysmonOut -match $Exclude)
+                {
                     $rindex=$SysmonOut.IndexOf("$m")
                     $SysmonOut.RemoveAt($rindex)
-               } 
+                } 
        
         }
         $Rul = New-Object System.Text.StringBuilder
@@ -104,18 +108,19 @@ try
         if ($str.Length -le 80)
         {
             Write-Verbose "$ComputerName SysmonOut: $str RuleHash may be incorrect.." -Verbose
-        }
-        if (!([string]::IsNullOrEmpty($str)))
+        }#>
+        if (!([string]::IsNullOrEmpty($RuleConfig)))
         {
-            ComputeHash -Data $str -HashAlgorithm $Algorithm
+            ComputeHash -Data $RuleConfig -HashAlgorithm $Algorithm
         }
         else
         {
-            Write-Error "Impossible to calculate rule hash. Config string is null or empty" -ErrorAction Stop
+            Write-Verbose "$ComputerName Impossible to calculate rule hash. Config is null or empty" -Verbose
         }
     }
     function GetSysmon
     {
+        
         param([switch]$UseLogNameFind)
         
         if ($PSBoundParameters['UseLogNameFind'].ispresent)
@@ -143,7 +148,7 @@ try
             }
             catch
             {
-                Write-Error "Sysmon Not Found"
+                Write-Error "Sysmon Not Found" -ErrorAction Stop
             }
             
         }
