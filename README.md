@@ -3,11 +3,9 @@ This module contains PowerShell function Get-SystemInfo that gets  system inform
 ## Description
 The function uses multithreading. Multithreading is implemented through powershell runspace and PsJob
 
-Function allows you to use protocols DCOM or WSMAN
+You can use the DCOM or WSMAN protocols!
 
-The function allows you to quickly get the system information of a large number of computers on the network
-
-The function uses WMI to collect information related to the characteristics of the computer
+The function allows you to quickly get the system information of a large number of computers on the network!
 
 After executing, two variables are created: 
 
