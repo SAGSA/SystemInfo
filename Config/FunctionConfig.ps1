@@ -81,6 +81,7 @@ DeviceModel=        '-Class Win32_Computersystem -Property model'
 SerialNumber=       '-Class Win32_Bios -Property SerialNumber'
 ProductNumber=      '-Class StdRegProv -Script bios\ProductNumber.ps1'
 BiosInfo=           '-Class Win32_Bios -Script bios\BiosInfo.ps1'
+BatteryInfo =       '-Class BatteryCycleCount,BatteryFullChargedCapacity,BatteryStaticData,MSBatteryClass -Script bios\BatteryInfo.ps1'
 #Monitor section
 
 MonitorManuf=       '-Class wmiMonitorID -Script Monitor\MonitorManuf.ps1'
@@ -148,6 +149,10 @@ MSPower_DeviceWakeEnable='-Namespace Root\wmi'
 MSNdis_DeviceWakeOnMagicPacketOnly='-Namespace Root\wmi'
 MSSMBios_RawSMBiosTables='-Namespace Root\wmi'
 win32_PowerPlan='-Namespace Root\cimv2\power'
+BatteryCycleCount='-Namespace Root\wmi'
+BatteryFullChargedCapacity='-Namespace Root\wmi'
+BatteryStaticData='-Namespace Root\wmi'
+MSBatteryClass='-Namespace Root\wmi'
 }
 
 #End FunctionConfig
@@ -167,6 +172,7 @@ PrinterInfo="Printers","UsbConPrCount","IsPrintServer","UsbConPrOnline"
 UsbDevices="UsbDevices"
 SoftwareList="SoftwareList"
 CheckVulnerabilities="OsCaption","OsLoggedInUser","MeltdownSpectreStatus","EternalBlueStatus"
+DefaultInfo=$DefaultInfoConfig
 }
 
 #Exclude switch Param

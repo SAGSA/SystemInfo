@@ -89,6 +89,7 @@ function Get-SystemInfo
             [switch]$UsbDevices,
             [switch]$SoftwareList,
             [switch]$CheckVulnerabilities,
+            [switch]$DefaultInfo,
             [System.Management.Automation.Remoting.PSSessionOption]$PSSessionOption,
             $Credential,
             [ValidateSet("Dcom","Wsman")]
@@ -107,7 +108,7 @@ function Get-SystemInfo
             "OsProfileList","OsSRPSettings","OsSrpLog","OsMstscVersion","OsPowerPlan","OsBSoD","LastInteractiveUser","SerialNumber","ProductNumber","ADSiteName","MsOfficeInfo","UserProxySettings","NetFolderShortcuts","NetMappedDrives","PsVersion","MemoryTotal","MemoryFree","MemoryModules","MemoryModInsCount","BiosInfo",
             "MemoryMaxIns","MemorySlots","ECCType","MemoryAvailable","Motherboard","MotherboardModel","DeviceModel","Cdrom","CdromMediatype","HddDevices","HDDSmart",
             "HddSmartStatus","HddPartitions","HddVolumes","VolumeQuotaSetting","VolumeQuotaList","VolumeShadowCopy","VolumeShadowStorage","VideoModel","VideoRam","VideoProcessor","CPUName","CPUDescription","CPUSocket","MaxClockSpeed","CPUCores","CPULogicalCore","CPULoad","MonitorManuf",
-            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo","GoogleChromeInfo","SysmonInfo","Software1cInfo","Server1cInfo","OsKernelPowerFailCount","MseLastUpdateDate")] 
+            "MonitorPCode","MonitorSN","MonitorName","MonitorYear","NetPhysAdapCount","NetworkAdapters","NetworkAdaptersPowMan","Printers","IsPrintServer","UsbConPrOnline","UsbDevices","SoftwareList","MeltdownSpectreStatus","EternalBlueStatus","AntivirusStatus","SkypeInfo","GoogleChromeInfo","SysmonInfo","Software1cInfo","Server1cInfo","OsKernelPowerFailCount","MseLastUpdateDate","BatteryInfo")] 
             [string[]]$Properties
             
             )
